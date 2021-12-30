@@ -58,6 +58,8 @@
 
 	$tmp_file = tempnam(sys_get_temp_dir(), '.allow-null');
 
+	$ignore_nullable = [];
+
 //--------------------------------------------------
 // Tests
 
@@ -124,7 +126,8 @@
 	test('sodium_base642bin', 1, sodium_base642bin('', SODIUM_BASE64_VARIANT_ORIGINAL), sodium_base642bin(NULL, SODIUM_BASE64_VARIANT_ORIGINAL));
 	test('sodium_base642bin', 3, sodium_base642bin('QQ==', SODIUM_BASE64_VARIANT_ORIGINAL, ''), sodium_base642bin('QQ==', SODIUM_BASE64_VARIANT_ORIGINAL, NULL));
 	test('mb_convert_encoding', 1, mb_convert_encoding('', 'UTF-8', 'ISO-8859-1'), mb_convert_encoding(NULL, 'UTF-8', 'ISO-8859-1'));
-	// test('mb_convert_encoding', 1, mb_convert_encoding('a', 'UTF-8', ''), mb_convert_encoding('a', 'UTF-8', NULL)); // must specify at least one encoding
+	// test('mb_convert_encoding', 2, mb_convert_encoding('a', 'UTF-8', ''), mb_convert_encoding('a', 'UTF-8', NULL)); // must specify at least one encoding
+	$ignore_nullable['mb_convert_encoding'][] = '2:to_encoding';
 	test('mb_detect_encoding', 1, mb_detect_encoding(''), mb_detect_encoding(NULL));
 	test('mb_encode_mimeheader', 1, mb_encode_mimeheader(''), mb_encode_mimeheader(NULL));
 	test('mb_encode_mimeheader', 3, mb_encode_mimeheader('A', 'UTF-8', ''), mb_encode_mimeheader('A', 'UTF-8', NULL)); // Oddity with transfer_encoding, complains when in theory it can be NULL?
@@ -133,6 +136,7 @@
 	test('mb_encode_numericentity', 1, mb_encode_numericentity('', [0x80, 0xff, 0, 0xff]), mb_encode_numericentity(NULL, [0x80, 0xff, 0, 0xff]));
 	test('mb_decode_numericentity', 1, mb_decode_numericentity('', [0x80, 0xff, 0, 0xff]), mb_decode_numericentity(NULL, [0x80, 0xff, 0, 0xff]));
 	// test('transliterator_transliterate', 2, transliterator_transliterate('', 'a'), transliterator_transliterate(NULL, 'a')); // Could not create transliterator with ID "")
+	$ignore_nullable['transliterator_transliterate'][] = '1:transliterator';
 	test('transliterator_transliterate', 2, transliterator_transliterate('Hex-Any/Java', ''), transliterator_transliterate('Hex-Any/Java', NULL));
 	$mysqli = new mysqli('localhost', 'test', 'test', 'test');
 	test('mysqli_real_escape_string', 2, mysqli_real_escape_string($mysqli, ''), mysqli_real_escape_string($mysqli, NULL));
@@ -163,8 +167,10 @@
 	test('substr_replace', 1, substr_replace('', 'a', 0), substr_replace(NULL, 'a', 0));
 	test('substr_replace', 2, substr_replace('a', '', 0), substr_replace('a', NULL, 0));
 	test('substr_count', 1, substr_count('', 'a'), substr_count(NULL, 'a'));
-	// test('substr_count', 1, substr_count('a', ''), substr_count('a', NULL)); // cannot be empty in
-	// test('explode', 2, explode('', 'a'), explode(NULL, 'a')); // cannot be empty
+	// test('substr_count', 2, substr_count('a', ''), substr_count('a', NULL)); // cannot be empty in
+	$ignore_nullable['substr_count'][] = '2:needle';
+	// test('explode', 1, explode('', 'a'), explode(NULL, 'a')); // cannot be empty
+	$ignore_nullable['explode'][] = '1:separator';
 	test('explode', 2, explode(' ', ''), explode(' ', NULL));
 	test('implode', 1, implode('', []), implode(NULL, []));
 	test('join', 1, join('', []), join(NULL, [])); // Alias of implode
@@ -175,6 +181,7 @@
 	test('chunk_split', 3, chunk_split('a', 10, ''), chunk_split('a', 10, NULL));
 	test('wordwrap', 1, wordwrap(''), wordwrap(NULL));
 	// test('wordwrap', 1, wordwrap('a', 10, ''), wordwrap('a', 10, NULL)); // cannot be empty
+	$ignore_nullable['wordwrap'][] = '3:break';
 	test('strtr', 1, strtr('', 'a', 'ä'), strtr(NULL, 'a', 'ä'));
 	test('strtr', 2, strtr('a', '', 'ä'), strtr('a', NULL, 'ä'));
 	// test('strtr', 3, strtr('a', 'a', ''), strtr('a', 'a', NULL)); // Does not work
@@ -188,6 +195,7 @@
 	test('str_repeat', 1, str_repeat('', 10), str_repeat(NULL, 10));
 	test('str_pad', 1, str_pad('', 10), str_pad(NULL, 10));
 	// test('str_pad', 3, str_pad('a', 10, ''), str_pad('a', 10, NULL)); // must be a non-empty string
+	$ignore_nullable['str_pad'][] = '3:pad_string';
 	test('nl2br', 1, nl2br(''), nl2br(NULL));
 	test('strip_tags', 1, strip_tags(''), strip_tags(NULL));
 	test('hebrev', 1, hebrev(''), hebrev(NULL));
@@ -201,6 +209,7 @@
 	test('mb_substr', 1, mb_substr('', 0), mb_substr(NULL, 0));
 	test('mb_substr_count', 1, mb_substr_count('', 'a'), mb_substr_count(NULL, 'a'));
 	// test('mb_substr_count', 2, mb_substr_count('a', ''), mb_substr_count('a', NULL)); // must not be empty
+	$ignore_nullable['mb_substr_count'][] = '2:needle';
 	test('mb_str_split', 1, mb_str_split(''), mb_str_split(NULL));
 	test('mb_split', 1, mb_split('', 'a'), mb_split(NULL, 'a')); // Weird, but works.
 	test('mb_split', 2, mb_split('a', ''), mb_split('a', NULL));
@@ -287,6 +296,7 @@
 	test('strrchr', 2, strrchr('a', ''), strrchr('a', NULL));
 	test('strpbrk', 1, strpbrk('', 'a'), strpbrk(NULL, 'a'));
 	// test('strpbrk', 2, strpbrk('a', ''), strpbrk('a', NULL)); // must be a non-empty string
+	$ignore_nullable['strpbrk'][] = '2:characters';
 	test('strspn', 1, strspn('', 'a'), strspn(NULL, 'a'));
 	test('strspn', 2, strspn('a', ''), strspn('a', NULL));
 	test('strcspn', 1, strcspn('', 'a'), strcspn(NULL, 'a'));
@@ -317,25 +327,33 @@
 	test('grapheme_stristr', 1, grapheme_stristr('', 'a'), grapheme_stristr(NULL, 'a'));
 	test('grapheme_stristr', 2, grapheme_stristr('a', ''), grapheme_stristr('a', NULL));
 	// test('preg_match', 1, preg_match('', 'a'), preg_match(NULL, 'a')); // Empty regular expression
+	$ignore_nullable['preg_match'][] = '1:pattern';
 	test('preg_match', 2, preg_match('/a/', ''), preg_match('/a/', NULL));
 	// test('preg_match_all', 1, preg_match_all('', 'a'), preg_match_all(NULL, 'a')); // Empty regular expression
+	$ignore_nullable['preg_match_all'][] = '1:pattern';
 	test('preg_match_all', 2, preg_match_all('/a/', ''), preg_match_all('/a/', NULL));
 	// test('preg_replace', 1, preg_replace('', 'a', 'ä'), preg_replace(NULL, 'a', 'ä')); // Empty regular expression
+	$ignore_nullable['preg_replace'][] = '1:pattern';
 	test('preg_replace', 2, preg_replace('/a/', '', 'ä'), preg_replace('/a/', NULL, 'ä'));
 	test('preg_replace', 3, preg_replace('/a/', 'a', ''), preg_replace('/a/', 'a', NULL));
 	// test('preg_filter', 1, preg_filter('', 'a', 'ä'), preg_filter(NULL, 'a', 'ä')); // Empty regular expression
+	$ignore_nullable['preg_filter'][] = '1:pattern';
 	test('preg_filter', 2, preg_filter('/a/', '', 'ä'), preg_filter('/a/', NULL, 'ä'));
 	test('preg_filter', 3, preg_filter('/a/', 'a', ''), preg_filter('/a/', 'a', NULL));
 	function preg_callback() {}
 	// test('preg_replace_callback', 1, preg_replace_callback('', 'preg_callback', 'a'), preg_replace_callback(NULL, 'preg_callback', 'a')); // Empty regular expression
+	$ignore_nullable['preg_replace_callback'][] = '1:pattern';
 	test('preg_replace_callback', 3, preg_replace_callback('/a/', 'preg_callback', 'a'), preg_replace_callback('/a/', 'preg_callback', NULL));
 	test('preg_replace_callback_array', 2, preg_replace_callback_array(['/a/' => 'preg_callback'], ''), preg_replace_callback_array(['/a/' => 'preg_callback'], NULL));
 	// test('preg_split', 1, preg_split('', 'a'), preg_split(NULL, 'a')); // Empty regular expression
+	$ignore_nullable['preg_split'][] = '1:pattern';
 	test('preg_split', 2, preg_split('/a/', ''), preg_split('/a/', NULL));
 	test('preg_quote', 1, preg_quote(''), preg_quote(NULL));
 	// test('mb_ereg', 1, mb_ereg('', 'a'), mb_ereg(NULL, 'a')); // must not be empty
+	$ignore_nullable['mb_ereg'][] = '1:pattern';
 	test('mb_ereg', 2, mb_ereg('a', ''), mb_ereg('a', NULL));
 	// test('mb_eregi', 1, mb_eregi('', 'a'), mb_eregi(NULL, 'a')); // must not be empty
+	$ignore_nullable['mb_eregi'][] = '1:pattern';
 	test('mb_eregi', 2, mb_eregi('a', ''), mb_eregi('a', NULL));
 	test('mb_ereg_replace', 1, mb_ereg_replace('', 'a', 'ä'), mb_ereg_replace(NULL, 'a', 'ä')); // Oddity... Empty regular expression?
 	test('mb_ereg_replace', 2, mb_ereg_replace('a', '', 'ä'), mb_ereg_replace('a', NULL, 'ä'));
@@ -354,8 +372,10 @@
 	test('normalizer_is_normalized', 1, normalizer_is_normalized(''), normalizer_is_normalized(NULL));
 	test('normalizer_get_raw_decomposition', 1, normalizer_get_raw_decomposition(''), normalizer_get_raw_decomposition(NULL));
 	// test('hash', 1, hash('', 'a'), hash(NULL, 'a')); // must be a valid hashing algorithm
+	$ignore_nullable['hash'][] = '1:algo';
 	test('hash', 2, hash('sha256', ''), hash('sha256', NULL));
 	// test('hash_hmac', 1, hash_hmac('', 'a', 'a'), hash_hmac(NULL, 'a', 'a')); // must be a valid cryptographic hashing algorithm
+	$ignore_nullable['hash_hmac'][] = '1:algo';
 	test('hash_hmac', 2, hash_hmac('sha256', '', 'a'), hash_hmac('sha256', NULL, 'a'));
 	test('hash_hmac', 3, hash_hmac('sha256', 'a', ''), hash_hmac('sha256', 'a', NULL)); // Oddity, should an empty key be allowed?
 	$h = hash_init('sha256');
@@ -363,6 +383,7 @@
 	// test('hash_equals', 1, hash_equals('', 'a'), hash_equals(NULL, 'a')); // must be of type string, null given
 	// test('hash_equals', 1, hash_equals('a', ''), hash_equals('a', NULL)); // must be of type string, null given
 	// test('hash_pbkdf2', 1, hash_pbkdf2('', 'a', 'a', 1000), hash_pbkdf2(NULL, 'a', 'a', 1000)); // must be a valid cryptographic hashing algorithm
+	$ignore_nullable['hash_pbkdf2'][] = '1:algo';
 	test('hash_pbkdf2', 2, hash_pbkdf2('sha256', '', 'a', 1000), hash_pbkdf2('sha256', NULL, 'a', 1000));
 	test('hash_pbkdf2', 3, hash_pbkdf2('sha256', 'a', '', 1000), hash_pbkdf2('sha256', 'a', NULL, 1000)); // Oddity, should an empty key be allowed?
 	test('crc32', 1, crc32(''), crc32(NULL));
@@ -379,10 +400,12 @@
 	test('fputs', 2, fputs($fp, ''), fputs($fp, NULL)); // Alias of fwrite
 	fclose($fp);
 	// test('setcookie', 1, setcookie(''), setcookie(NULL)); // cannot be empty
+	$ignore_nullable['setcookie'][] = '1:name';
 	test('setcookie', 2, setcookie('a', ''), setcookie('a', NULL));
 	test('setcookie', 4, setcookie('a', 'a', 0, ''), setcookie('a', 'a', 0, NULL)); // path
 	test('setcookie', 5, setcookie('a', 'a', 0, '/', ''), setcookie('a', 'a', 0, '/', NULL)); // domain
 	// test('setrawcookie', 1, setrawcookie(''), setrawcookie(NULL)); // cannot be empty
+	$ignore_nullable['setrawcookie'][] = '1:name';
 	test('setrawcookie', 2, setrawcookie('a', ''), setrawcookie('a', NULL));
 	test('setrawcookie', 4, setrawcookie('a', 'a', 0, ''), setrawcookie('a', 'a', 0, NULL)); // path
 	test('setrawcookie', 5, setrawcookie('a', 'a', 0, '/', ''), setrawcookie('a', 'a', 0, '/', NULL)); // domain
@@ -411,12 +434,17 @@
 	test('str_getcsv', 4, str_getcsv('a', ',', '"', ''), str_getcsv('a', ',', '"', NULL));
 	$fp = fopen($tmp_file, 'w+');
 	// test('fputcsv', 3, fputcsv($fp, ['a'], '', '"', '\\', "\n"), fputcsv($fp, ['a'], NULL, '"', '\\', "\n")); // must be a single character
+	$ignore_nullable['fputcsv'][] = '3:separator';
 	// test('fputcsv', 4, fputcsv($fp, ['a'], ',', '', '\\', "\n"), fputcsv($fp, ['a'], ',', NULL, '\\', "\n")); // must be a single character
+	$ignore_nullable['fputcsv'][] = '4:enclosure';
 	test('fputcsv', 5, fputcsv($fp, ['a'], ',', '"', '', "\n"), fputcsv($fp, ['a'], ',', '"', NULL, "\n"));
 	// test('fputcsv', 6, fputcsv($fp, ['a'], ',', '"', '\\', ""), fputcsv($fp, ['a'], ',', '"', '\\', NULL)); // Oddity, already allows null?
+	$ignore_nullable['fputcsv'][] = '6:eol';
 	rewind($fp);
 	// test('fgetcsv', 3, fgetcsv($fp, 0, '', '"', '\\'), fgetcsv($fp, 0, NULL, '"', '\\')); // must be a single character
+	$ignore_nullable['fgetcsv'][] = '3:separator';
 	// test('fgetcsv', 4, fgetcsv($fp, 0, ',', '', '\\'), fgetcsv($fp, 0, ',', NULL, '\\')); must be a single character
+	$ignore_nullable['fgetcsv'][] = '4:enclosure';
 	test('fgetcsv', 5, fgetcsv($fp, 0, ',', '"', ''), fgetcsv($fp, 0, ',', '"', NULL));
 	fclose($fp);
 	$im = imagecreate(100, 100);
@@ -425,9 +453,13 @@
 	test('imagecharup', 5, imagecharup($im, 0, 0, 0, '', $bg), imagecharup($im, 0, 0, 0, NULL, $bg));
 	test('imagestring', 5, imagestring($im, 0, 0, 0, '', $bg), imagestring($im, 0, 0, 0, NULL, $bg));
 	test('imagestringup', 5, imagestringup($im, 0, 0, 0, '', $bg), imagestringup($im, 0, 0, 0, NULL, $bg));
+	$ignore_nullable['imageftbbox'][] = '3:font_filename';
 	test('imageftbbox', 4, imageftbbox(0, 0, './a/gd-tuffy.ttf', ''), imageftbbox(0, 0, './a/gd-tuffy.ttf', NULL));
+	$ignore_nullable['imagefttext'][] = '7:font_filename';
 	test('imagefttext', 8, imagefttext($im, 0, 0, 0, 0, $bg, './a/gd-tuffy.ttf', ''), imagefttext($im, 0, 0, 0, 0, $bg, './a/gd-tuffy.ttf', NULL));
+	$ignore_nullable['imagettfbbox'][] = '3:font_filename';
 	test('imagettfbbox', 4, imagettfbbox(0, 0, './a/gd-tuffy.ttf', ''), imagettfbbox(0, 0, './a/gd-tuffy.ttf', NULL));
+	$ignore_nullable['imagettftext'][] = '7:font_filename';
 	test('imagettftext', 8, imagettftext($im, 0, 0, 0, 0, $bg, './a/gd-tuffy.ttf', ''), imagettftext($im, 0, 0, 0, 0, $bg, './a/gd-tuffy.ttf', NULL));
 	test('password_get_info', 1, password_get_info(''), password_get_info(NULL));
 	$a = password_hash('', PASSWORD_DEFAULT); $b = password_hash(NULL, PASSWORD_DEFAULT); test('password_hash', 1, '', ''); // Do not check output values, as salt changes
@@ -453,13 +485,16 @@
 	test('bcmul', 2, bcmul('1', ''), bcmul('1', NULL));
 	test('bcdiv', 1, bcdiv('', '1'), bcdiv(NULL, '1'));
 	// test('bcdiv', 2, bcdiv('1', ''), bcdiv('1', NULL)); // Division by zero
+	$ignore_nullable['bcdiv'][] = '2:num2';
 	test('bcmod', 1, bcmod('', '1'), bcmod(NULL, '1'));
 	// test('bcmod', 2, bcmod('1', ''), bcmod('1', NULL)); // Modulo by zero
+	$ignore_nullable['bcmod'][] = '2:num2';
 	test('bcpow', 1, bcpow('', '1'), bcpow(NULL, '1'));
 	test('bcpow', 2, bcpow('1', ''), bcpow('1', NULL));
 	test('bcpowmod', 1, bcpowmod('', '1', '1'), bcpowmod(NULL, '1', '1'));
 	test('bcpowmod', 2, bcpowmod('1', '', '1'), bcpowmod('1', NULL, '1'));
 	// test('bcpowmod', 3, bcpowmod('1', '1', ''), bcpowmod('1', '1', NULL)); // Modulo by zero
+	$ignore_nullable['bcpowmod'][] = '3:modulus';
 	test('bcsqrt', 1, bcsqrt(''), bcsqrt(NULL));
 	test('bccomp', 1, bccomp('', '1'), bccomp(NULL, '1'));
 	test('bccomp', 2, bccomp('1', ''), bccomp('1', NULL));
@@ -475,14 +510,17 @@
 	xmlwriter_start_element($x, 'a');
 	test('xmlwriter_set_indent_string', 2, xmlwriter_set_indent_string($x, ''), xmlwriter_set_indent_string($x, NULL));
 	// test('xmlwriter_write_attribute', 1, xmlwriter_write_attribute($x, '', 'a'), xmlwriter_write_attribute($x, NULL, 'a')); // must be a valid attribute name
+	$ignore_nullable['xmlwriter_write_attribute'][] = '2:name';
 	test('xmlwriter_write_attribute', 3, xmlwriter_write_attribute($x, 'a', ''), xmlwriter_write_attribute($x, 'a', NULL));
 	// test('xmlwriter_write_attribute_ns', 2, xmlwriter_write_attribute_ns($x, '', 'a', 'a', 'a'), xmlwriter_write_attribute_ns($x, NULL, 'a', 'a', 'a')); // fine
 	// test('xmlwriter_write_attribute_ns', 3, xmlwriter_write_attribute_ns($x, 'a', '', 'a', 'a'), xmlwriter_write_attribute_ns($x, 'a', NULL, 'a', 'a')); // must be a valid attribute name
+	$ignore_nullable['xmlwriter_write_attribute_ns'][] = '3:name';
 	// test('xmlwriter_write_attribute_ns', 4, xmlwriter_write_attribute_ns($x, 'a', 'a', '', 'a'), xmlwriter_write_attribute_ns($x, 'a', 'a', NULL, 'a')); // fine
 	test('xmlwriter_write_attribute_ns', 5, xmlwriter_write_attribute_ns($x, 'a', 'a', 'a', ''), xmlwriter_write_attribute_ns($x, 'a', 'a', 'a', NULL));
 	// test('xmlwriter_write_element', 3, xmlwriter_write_element($x, ''), xmlwriter_write_element($x, NULL)); // must be a valid element name
 	// test('xmlwriter_write_element_ns', 3, xmlwriter_write_element_ns($x, ''), xmlwriter_write_element_ns($x, NULL)); // must be a valid element name
 	// test('xmlwriter_write_pi', 2, xmlwriter_write_pi($x, '', 'a'), xmlwriter_write_pi($x, NULL, 'a')); // must be a valid PI target
+	$ignore_nullable['xmlwriter_write_pi'][] = '2:target';
 	test('xmlwriter_write_pi', 3, xmlwriter_write_pi($x, 'a', ''), xmlwriter_write_pi($x, 'a', NULL));
 	test('xmlwriter_write_cdata', 2, xmlwriter_write_cdata($x, ''), xmlwriter_write_cdata($x, NULL));
 	test('xmlwriter_text', 2, xmlwriter_text($x, ''), xmlwriter_text($x, NULL));
@@ -490,10 +528,13 @@
 	test('xmlwriter_write_comment', 2, xmlwriter_write_comment($x, ''), xmlwriter_write_comment($x, NULL));
 	test('xmlwriter_write_dtd', 2, xmlwriter_write_dtd($x, ''), xmlwriter_write_dtd($x, NULL));
 	// test('xmlwriter_write_dtd_element', 2, xmlwriter_write_dtd_element($x, '', 'a'), xmlwriter_write_dtd_element($x, NULL, 'a')); // must be a valid element name
+	$ignore_nullable['xmlwriter_write_dtd_element'][] = '2:name';
 	test('xmlwriter_write_dtd_element', 3, xmlwriter_write_dtd_element($x, 'a', ''), xmlwriter_write_dtd_element($x, 'a', NULL));
 	// test('xmlwriter_write_dtd_attlist', 2, xmlwriter_write_dtd_attlist($x, '', 'a'), xmlwriter_write_dtd_attlist($x, NULL, 'a')); // must be a valid element name
+	$ignore_nullable['xmlwriter_write_dtd_attlist'][] = '2:name';
 	test('xmlwriter_write_dtd_attlist', 3, xmlwriter_write_dtd_attlist($x, 'a', ''), xmlwriter_write_dtd_attlist($x, 'a', NULL));
 	// test('xmlwriter_write_dtd_entity', 2, xmlwriter_write_dtd_entity($x, '', 'a'), xmlwriter_write_dtd_entity($x, NULL, 'a')); // must be a valid element name
+	$ignore_nullable['xmlwriter_write_dtd_entity'][] = '2:name';
 	test('xmlwriter_write_dtd_entity', 3, xmlwriter_write_dtd_entity($x, 'a', ''), xmlwriter_write_dtd_entity($x, 'a', NULL));
 
 //--------------------------------------------------
@@ -632,7 +673,12 @@
 						}
 					} else {
 						if (in_array(($arg_number - 1), $non_nullable)) {
-							echo 'Error: "' . $function_name . '", arg "' . $arg_info['name'] . '" is NOT being asked to be nullable, when it could be?' . "\n";
+							$ref = $arg_number . ':' . $arg_info['name'];
+							if (in_array($ref, ($ignore_nullable[$function_name] ?? []))) {
+								// echo 'Ignored: "' . $function_name . '", arg "' . $arg_info['name'] . '"' . "\n";
+							} else {
+								echo 'Error: "' . $function_name . '", arg "' . $ref . '" is NOT being asked to be nullable, when it could be?' . "\n";
+							}
 						}
 					}
 

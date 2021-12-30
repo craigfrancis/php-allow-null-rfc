@@ -7,6 +7,9 @@ Replace
   $4
 
 
+pattern:string... why can some be an empty string?
+
 
 Can this be done by changing `Z_PARAM_STR()` to `Z_PARAM_STR_OR_NULL()`... e.g html_entity_decode()
+
 

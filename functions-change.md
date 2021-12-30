@@ -6,84 +6,60 @@
 - `urldecode`(**string:string**)
 - `rawurlencode`(**string:string**)
 - `rawurldecode`(**string:string**)
-
 - `base64_encode`(**string:string**)
 - `base64_decode`(**string:string**, strict:bool)
-
 - `utf8_encode`(**string:string**)
 - `utf8_decode`(**string:string**)
-
 - `bin2hex`(**string:string**)
 - `hex2bin`(**string:string**)
-
 - `bindec`(**binary_string:string**)
 - `hexdec`(**hex_string:string**)
 - `octdec`(**octal_string:string**)
-
 - `base_convert`(**num:string**, from_base:int, to_base:int)
-
 - `htmlspecialchars`(**string:string**, flags:int, encoding:string, double_encode:bool)
 - `htmlspecialchars_decode`(**string:string**, flags:int)
 - `html_entity_decode`(**string:string**, flags:int, encoding:string)
 - `htmlentities`(**string:string**, flags:int, encoding:string, double_encode:bool)
-
 - `json_decode`(**json:string**, associative:bool, depth:int, flags:int)
-
 - `session_decode`(**data:string**)
-
 - `addslashes`(**string:string**)
 - `addcslashes`(**string:string**, **characters:string**)
 - `stripslashes`(**string:string**)
 - `stripcslashes`(**string:string**)
-
 - `quotemeta`(**string:string**)
-
 - `quoted_printable_decode`(**string:string**)
 - `quoted_printable_encode`(**string:string**)
-
 - `escapeshellcmd`(**command:string**)
 - `escapeshellarg`(**arg:string**)
-
 - `curl_escape`(handle:CurlHandle, **string:string**)
 - `curl_unescape`(handle:CurlHandle, **string:string**)
-
 - `convert_uuencode`(**string:string**)
-
 - `zlib_encode`(**data:string**, encoding:int, level:int)
-
 - `gzdeflate`(**data:string**, level:int, encoding:int)
 - `gzencode`(**data:string**, level:int, encoding:int)
 - `gzcompress`(**data:string**, level:int, encoding:int)
 - `gzwrite`(_stream:?_, **data:string**, length:int)
 - `gzputs`(_stream:?_, **data:string**, length:int)
-
 - `deflate_add`(context:DeflateContext, **data:string**, flush_mode:int)
 - `inflate_add`(context:InflateContext, **data:string**, flush_mode:int)
-
 - `pack`(**format:string**, values:mixed)
 - `unpack`(**format:string**, **string:string**, offset:int)
-
 - `iconv_mime_encode`(**field_name:string**, **field_value:string**, options:array)
 - `iconv_mime_decode`(**string:string**, mode:int, encoding:string)
 - `iconv`(**from_encoding:string**, **to_encoding:string**, **string:string**)
-
 - `sodium_bin2hex`(**string:string**)
 - `sodium_hex2bin`(**string:string**, **ignore:string**)
 - `sodium_bin2base64`(**string:string**, id:int)
 - `sodium_base642bin`(**string:string**, id:int, **ignore:string**)
-
 - `mb_convert_encoding`(**string:array|string**, to_encoding:string, from_encoding:array|string|null)
 - `mb_detect_encoding`(**string:string**, encodings:array|string|null, strict:bool)
 - `mb_encode_mimeheader`(**string:string**, charset:string, transfer_encoding:string, **newline:string**, indent:int)
 - `mb_decode_mimeheader`(**string:string**)
 - `mb_encode_numericentity`(**string:string**, map:array, encoding:string, hex:bool)
 - `mb_decode_numericentity`(**string:string**, map:array, encoding:string)
-
 - `transliterator_transliterate`(transliterator:Transliterator|string, **string:string**, start:int, end:int)
-
 - `mysqli_real_escape_string`(mysql:mysqli, **string:string**)
 - `mysqli_escape_string`(mysql:mysqli, **string:string**)
-
 - ? `pg_escape_string`(_connection:?_, **string:string**)
 - ? `pg_escape_bytea`(_connection:?_, **string:string**)
 - ? `pg_unescape_bytea`(**string:string**)
@@ -97,44 +73,32 @@
 - `ucfirst`(**string:string**)
 - `lcfirst`(**string:string**)
 - `ucwords`(**string:string**, **separators:string**)
-
 - `trim`(**string:string**, **characters:string**)
 - `ltrim`(**string:string**, **characters:string**)
 - `rtrim`(**string:string**, **characters:string**)
 - `chop`(**string:string**, **characters:string**)
-
 - `str_rot13`(**string:string**)
 - `str_shuffle`(**string:string**)
-
 - `substr`(**string:string**, offset:int, length:int)
 - `substr_replace`(**string:array|string**, **replace:array|string**, offset:array|int, length:array|int|null)
 - `substr_count`(**haystack:string**, needle:string, offset:int, length:int)
-
 - `explode`(separator:string, **string:string**, limit:int)
 - `implode`(**separator:array|string**, array:array)
 - `join`(**separator:array|string**, array:array)
-
 - `strcoll`(**string1:string**, **string2:string**)
 - `str_split`(**string:string**, length:int)
 - `chunk_split`(**string:string**, length:int, **separator:string**)
 - `wordwrap`(**string:string**, width:int, break:string, cut_long_words:bool)
-
 - `strtr`(**string:string**, **from:array|string**, to:string)
 - `strrev`(**string:string**)
-
 - `str_replace`(**search:array|string**, **replace:array|string**, **subject:array|string**, _count:?_)
 - `str_ireplace`(**search:array|string**, **replace:array|string**, **subject:array|string**, _count:?_)
-
 - `str_repeat`(**string:string**, times:int)
 - `str_pad`(**string:string**, length:int, pad_string:string, pad_type:int)
-
 - `nl2br`(**string:string**, use_xhtml:bool)
 - `strip_tags`(**string:string**, allowed_tags:array|string|null)
-
 - `hebrev`(**string:string**, max_chars_per_line:int)
-
 - `iconv_substr`(**string:string**, offset:int, length:int, encoding:string)
-
 - `mb_strtoupper`(**string:string**, encoding:string)
 - `mb_strtolower`(**string:string**, encoding:string)
 - `mb_convert_case`(**string:string**, mode:int, encoding:string)
@@ -144,9 +108,7 @@
 - `mb_substr_count`(**haystack:string**, needle:string, encoding:string)
 - `mb_str_split`(**string:string**, length:int, encoding:string)
 - `mb_split`(**pattern:string**, **string:string**, limit:int)
-
 - `sodium_pad`(**string:string**, block_size:int)
-
 - `grapheme_substr`(**string:string**, offset:int, length:int)
 
 ## String Position
@@ -155,15 +117,12 @@
 - `strrpos`(**haystack:string**, **needle:string**, offset:int)
 - `stripos`(**haystack:string**, **needle:string**, offset:int)
 - `strripos`(**haystack:string**, **needle:string**, offset:int)
-
 - `iconv_strpos`(**haystack:string**, **needle:string**, offset:int, encoding:string)
 - `iconv_strrpos`(**haystack:string**, **needle:string**, encoding:string)
-
 - `mb_strpos`(**haystack:string**, **needle:string**, offset:int, encoding:string)
 - `mb_strrpos`(**haystack:string**, **needle:string**, offset:int, encoding:string)
 - `mb_stripos`(**haystack:string**, **needle:string**, offset:int, encoding:string)
 - `mb_strripos`(**haystack:string**, **needle:string**, offset:int, encoding:string)
-
 - `grapheme_strpos`(**haystack:string**, **needle:string**, offset:int)
 - `grapheme_strrpos`(**haystack:string**, **needle:string**, offset:int)
 - `grapheme_stripos`(**haystack:string**, **needle:string**, offset:int)
@@ -184,12 +143,10 @@
 - `version_compare`(**version1:string**, **version2:string**, operator:string)
 - `collator_compare`(object:Collator, **string1:string**, **string2:string**)
 - `collator_get_sort_key`(object:Collator, **string:string**)
-
 - `metaphone`(**string:string**, max_phonemes:int)
 - `soundex`(**string:string**)
 - `levenshtein`(**string1:string**, **string2:string**, insertion_cost:int, replacement_cost:int, deletion_cost:int)
 - `similar_text`(**string1:string**, **string2:string**, _percent:?_)
-
 - `sodium_compare`(**string1:string**, **string2:string**)
 - `sodium_memcmp`(**string1:string**, **string2:string**)
 
@@ -207,9 +164,7 @@
 - `str_word_count`(**string:string**, format:int, characters:string)
 - `count_chars`(**string:string**, mode:int)
 - `ord`(**character:string**)
-
 - `iconv_strlen`(**string:string**, encoding:string)
-
 - `mb_strlen`(**string:string**, encoding:string)
 - `mb_strstr`(**haystack:string**, **needle:string**, before_needle:bool, encoding:string)
 - `mb_strrchr`(**haystack:string**, **needle:string**, before_needle:bool, encoding:string)
@@ -218,7 +173,6 @@
 - `mb_strcut`(**string:string**, start:int, length:int, encoding:string)
 - `mb_strwidth`(**string:string**, encoding:string)
 - `mb_strimwidth`(**string:string**, start:int, width:int, **trim_marker:string**, encoding:string)
-
 - `grapheme_strlen`(**string:string**)
 - `grapheme_strstr`(**haystack:string**, **needle:string**, beforeNeedle:bool)
 - `grapheme_stristr`(**haystack:string**, **needle:string**, beforeNeedle:bool)
@@ -233,7 +187,6 @@
 - `preg_replace_callback_array`(pattern:array, **subject:array|string**, limit:int, _count:?_, flags:int)
 - `preg_split`(pattern:string, **subject:string**, limit:int, flags:int)
 - `preg_quote`(**str:string**, delimiter:string)
-
 - `mb_ereg`(pattern:string, **string:string**, _matches:?_)
 - `mb_eregi`(pattern:string, **string:string**, _matches:?_)
 - `mb_ereg_replace`(**pattern:string**, **replacement:string**, **string:string**, options:string)
@@ -241,8 +194,6 @@
 - `mb_ereg_replace_callback`(**pattern:string**, callback:callable, **string:string**, options:string)
 - `mb_ereg_match`(**pattern:string**, **string:string**, options:string)
 - `mb_ereg_search_init`(**string:string**, pattern:string, options:string)
-
-? pattern:string, why can some be an empty string?
 
 ## Normalising
 
@@ -256,7 +207,6 @@
 - `hash_hmac`(algo:string, **data:string**, **key:string**, binary:bool)
 - `hash_update`(context:HashContext, **data:string**)
 - `hash_pbkdf2`(algo:string, **password:string**, **salt:string**, iterations:int, length:int, binary:bool)
-
 - `crc32`(**string:string**)
 - `md5`(**string:string**, binary:bool)
 - `sha1`(**string:string**, binary:bool)
@@ -267,7 +217,6 @@
 - `basename`(**path:string**, **suffix:string**)
 - `dirname`(**path:string**, levels:int)
 - `pathinfo`(**path:string**, flags:int)
-
 - `fwrite`(_stream:?_, **data:string**, length:int)
 - `fputs`(_stream:?_, **data:string**, length:int)
 
@@ -275,24 +224,17 @@
 
 - `setcookie`(name:string, **value:string**, expires_or_options:array|int, **path:string**, **domain:string**, secure:bool, httponly:bool)
 - `setrawcookie`(name:string, **value:string**, expires_or_options:array|int, **path:string**, **domain:string**, secure:bool, httponly:bool)
-
 - `output_add_rewrite_var`(**name:string**, **value:string**)
 
 ## Parsing
 
 - `parse_url`(**url:string**, component:int)
 - `parse_str`(**string:string**, _result:?_)
-
 - `mb_parse_str`(**string:string**, _result:?_)
-
 - `numfmt_parse`(formatter:NumberFormatter, **string:string**, type:int, _offset:?_)
-
 - `parse_ini_string`(**ini_string:string**, process_sections:bool, scanner_mode:int)
-
 - `sscanf`(**string:string**, **format:string**, vars:mixed)
-
 - `locale_accept_from_http`(**header:string**)
-
 - `msgfmt_parse`(formatter:MessageFormatter, **string:string**)
 - `msgfmt_parse_message`(**locale:string**, **pattern:string**, **message:string**)
 
@@ -373,7 +315,6 @@
 
 - ? `trigger_error`(**message:string**, error_level:int)
 - ? `user_error`(**message:string**, error_level:int)
-
 - ? `date_create`(**datetime:string**, timezone:DateTimeZone)
 - ? `date_create_immutable`(**datetime:string**, timezone:DateTimeZone)
 - ? `date_create_from_format`(**format:string**, **datetime:string**, timezone:DateTimeZone)
@@ -384,9 +325,7 @@
 - ? `date_modify`(object:DateTime, **modifier:string**)
 - ? `datefmt_parse`(formatter:IntlDateFormatter, **string:string**, _offset:?_)
 - ? `datefmt_localtime`(formatter:IntlDateFormatter, **string:string**, _offset:?_)
-
 - ? `grapheme_extract`(**haystack:string**, size:int, type:int, offset:int, _next:?_)
-
 - ? `gethostbyaddr`(**ip:string**)
 - ? `gethostbyname`(**hostname:string**)
 - ? `gethostbynamel`(**hostname:string**)
@@ -395,10 +334,8 @@
 - ? `dns_get_record`(**hostname:string**, type:int, _authoritative_name_servers:?_, _additional_records:?_, raw:bool)
 - ? `dns_get_mx`(**hostname:string**, _hosts:?_, _weights:?_)
 - ? `getmxrr`(**hostname:string**, _hosts:?_, _weights:?_)
-
 - ? `openlog`(**prefix:string**, flags:int, facility:int)
 - ? `syslog`(priority:int, **message:string**)
-
 - ? `sodium_crypto_aead_aes256gcm_decrypt`(**ciphertext:string**, **additional_data:string**, **nonce:string**, **key:string**)
 - ? `sodium_crypto_aead_aes256gcm_encrypt`(**message:string**, **additional_data:string**, **nonce:string**, **key:string**)
 - ? `sodium_crypto_aead_chacha20poly1305_decrypt`(**ciphertext:string**, **additional_data:string**, **nonce:string**, **key:string**)
@@ -473,7 +410,6 @@
 - ? `sodium_crypto_stream_xchacha20`(length:int, **nonce:string**, **key:string**)
 - ? `sodium_crypto_stream_xchacha20_xor`(**message:string**, **nonce:string**, **key:string**)
 - ? `sodium_crypto_scalarmult_base`(**secret_key:string**)
-
 - ? `pspell_new`(**language:string**, **spelling:string**, **jargon:string**, **encoding:string**, mode:int)
 - ? `pspell_new_personal`(**filename:string**, **language:string**, **spelling:string**, **jargon:string**, **encoding:string**, mode:int)
 - ? `pspell_check`(dictionary:PSpell\Dictionary, **word:string**)
@@ -486,6 +422,5 @@
 - ? `pspell_config_dict_dir`(config:PSpell\Config, **directory:string**)
 - ? `pspell_config_data_dir`(config:PSpell\Config, **directory:string**)
 - ? `pspell_config_repl`(config:PSpell\Config, **filename:string**)
-
 - ? `pg_copy_to`(connection:PgSql\Connection, **table_name:string**, **separator:string**, **null_as:string**)
 - ? `pg_copy_from`(connection:PgSql\Connection, **table_name:string**, rows:array, **separator:string**, **null_as:string**)

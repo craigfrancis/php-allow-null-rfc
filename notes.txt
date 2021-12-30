@@ -1,0 +1,12 @@
+
+grep -h -r -E '^\s*(ZEND_FUNCTION|PHP_FUNCTION|static void)|Z_PARAM_STR\(' ./php-src/
+
+Search
+  ^(\s*(ZEND_FUNCTION|PHP_FUNCTION|static void).*\n)*(ZEND_FUNCTION\(|PHP_FUNCTION\(|static void *)(.+?)(\)|\().*
+Replace
+  $4
+
+
+
+Can this be done by changing `Z_PARAM_STR()` to `Z_PARAM_STR_OR_NULL()`... e.g html_entity_decode()
+

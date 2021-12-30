@@ -34,20 +34,24 @@ And `NULL` can be returned from many functions, e.g.
 * `error_get_last()`
 * `json_decode()`
 
-Which makes it common for developers to pass potential `NULL` values to string functions, encoding/decoding functions, etc.
+Which makes it common for developers to pass potential `NULL` values to these internal functions, e.g.
 
 ```php
-$a = trim($name);
-$a = strtoupper($name);
-$a = strlen($name);
-$a = urlencode($name);
-$a = htmlspecialchars($name);
-$a = hash('sha256', $name);
+trim($name);
+strtoupper($name);
+strlen($name);
+urlencode($name);
+htmlspecialchars($name);
+hash('sha256', $name);
+preg_match('/^[a-z]/', $name);
+setcookie('name', $name);
+socket_write($socket, $name);
+xmlwriter_text($writer, $name);
 ```
 
-Currently this only affects those using PHP 8.1 with `E_DEPRECATED`, but it implies everyone will need to modify their code in the future.
+Currently this affects those using PHP 8.1 with `E_DEPRECATED`, but it implies everyone will need to modify their code in the future.
 
-It also applies to everyone, even if they are not using `strict_types=1`.
+It also applies even if they are not using `strict_types=1`.
 
 And while the individual modifications are easy, there are many of them, they are difficult to find, and often pointless (e.g. `urlencode(strval($name))`).
 
@@ -61,7 +65,7 @@ While this is in Draft, the [list of functions is hosted on GitHub](https://gith
 
 ## Decision Process
 
-Does the function parameter work with `NULL` in the same way that it would if an empty string is provided, e.g.
+Does the parameter work with `NULL`, in the same way that it would if an empty string is provided? e.g.
 
 - `preg_match()` should continue to deprecate `NULL` for `$pattern`, whereas `$subject` should accept `NULL`.
 - `hash_file()` should continue to deprecate `NULL` for the `$filename`.

@@ -49,6 +49,8 @@ socket_write($socket, $name);
 xmlwriter_text($writer, $name);
 ```
 
+And sometimes a developer may explicitly use `NULL` to skip certain parameters, e.g. `$additional_headers` in `mail()`.
+
 Currently this affects those using PHP 8.1 with `E_DEPRECATED`, but it implies everyone will need to modify their code in the future.
 
 It also applies even if they are not using `strict_types=1`.

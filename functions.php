@@ -9,6 +9,8 @@
 		if ($err_no === E_DEPRECATED && preg_match('/^([^\)]+)\(\): Passing null to parameter #([0-9]+) .* of type .* is deprecated$/', $err_str, $err_match)) {
 			$GLOBALS['null_errors'][$err_match[1]][$err_match[2]] = $err_line;
 			return true;
+		} else if ($err_no == E_USER_NOTICE && $err_str == '') {
+			return true; // `trigger_error` test
 		}
 		return false;
 	}
@@ -39,6 +41,12 @@
 		} else if ($a instanceof SimpleXMLElement && $b instanceof SimpleXMLElement) {
 			$a = $a->asXML();
 			$b = $b->asXML();
+		} else if ($a instanceof DateTime && $b instanceof DateTime) {
+			$a = $a->getTimestamp(); // Do not include sub-second resolution
+			$b = $b->getTimestamp();
+		} else if ($a instanceof DateTimeImmutable && $b instanceof DateTimeImmutable) {
+			$a = $a->getTimestamp(); // Do not include sub-second resolution
+			$b = $b->getTimestamp();
 		}
 
 		// if ($a === false) echo $called_from_line . ' ' . $function . ' - False A.' . "\n";
@@ -173,20 +181,22 @@
 		test('mysqli_real_escape_string', 2, mysqli_real_escape_string($mysqli, ''), mysqli_real_escape_string($mysqli, NULL));
 		test('mysqli_escape_string', 2, mysqli_escape_string($mysqli, ''), mysqli_escape_string($mysqli, NULL)); // Alias of mysqli_real_escape_string
 
-		// $pg = pg_connect('dbname=test');
-		// test('pg_escape_string', 1, pg_escape_string(''), pg_escape_string(NULL));
-		// test('pg_escape_bytea', 1, pg_escape_bytea(''), pg_escape_bytea(NULL));
-		// test('pg_unescape_bytea', 1, pg_unescape_bytea(''), pg_unescape_bytea(NULL));
-		// test('pg_escape_literal', 1, pg_escape_literal(''), pg_escape_literal(NULL));
-		// test('pg_escape_identifier', 1, pg_escape_identifier(''), pg_escape_identifier(NULL));
-
-// `pg_escape_string`(_connection:?_, **string:string**)
-// `pg_escape_bytea`(_connection:?_, **string:string**)
-// `pg_unescape_bytea`(**string:string**)
-// `pg_escape_literal`(_connection:?_, **string:string**)
-// `pg_escape_identifier`(_connection:?_, **string:string**)
-// `pg_copy_to`(connection:PgSql\Connection, **table_name:string**, **separator:string**, **null_as:string**)
-// `pg_copy_from`(connection:PgSql\Connection, **table_name:string**, rows:array, **separator:string**, **null_as:string**)
+		$pg = pg_connect('dbname=test user=craig');
+		test('pg_escape_string', 2, pg_escape_string($pg, ''), pg_escape_string($pg, NULL));
+		test('pg_escape_bytea', 2, pg_escape_bytea($pg, ''), pg_escape_bytea($pg, NULL));
+		test('pg_unescape_bytea', 1, pg_unescape_bytea(''), pg_unescape_bytea(NULL));
+		test('pg_escape_literal', 2, pg_escape_literal($pg, ''), pg_escape_literal($pg, NULL));
+		test('pg_escape_identifier', 2, pg_escape_identifier($pg, ''), pg_escape_identifier($pg, NULL));
+		// test('pg_copy_to', 2, pg_copy_to($pg, '', '|', 'NULL'), pg_copy_to($pg, NULL, '|', 'NULL')); // syntax error at or near
+		// test('pg_copy_to', 3, pg_copy_to($pg, 'users', '', 'NULL'), pg_copy_to($pg, 'users', NULL, 'NULL')); // must be one character
+		test('pg_copy_to', 4, pg_copy_to($pg, 'users', '|', ''), pg_copy_to($pg, 'users', '|', NULL));
+		$ignore_nullable['pg_copy_to'][] = '2:table_name';
+		$ignore_nullable['pg_copy_to'][] = '3:separator';
+		// test('pg_copy_from', 2, pg_copy_from($pg, '', ['1|Amy'], '|', 'NULL'), pg_copy_from($pg, NULL, ['1|Amy'], '|', 'NULL')); // syntax error at or near
+		// test('pg_copy_from', 4, pg_copy_from($pg, 'users', ['1|Amy'], '', 'NULL'), pg_copy_from($pg, 'users', ['1|Amy'], NULL, 'NULL')); must be one character
+		test('pg_copy_from', 5, pg_copy_from($pg, 'users', ['1|Amy'], '|', ''), pg_copy_from($pg, 'users', ['1|Amy'], '|', NULL));
+		$ignore_nullable['pg_copy_from'][] = '2:table_name';
+		$ignore_nullable['pg_copy_from'][] = '4:separator';
 
 	//--------------------------------------------------
 	// String Modification
@@ -578,16 +588,21 @@
 	//--------------------------------------------------
 	// Date
 
-// `date_create`(**datetime:string**, timezone:DateTimeZone)
-// `date_create_immutable`(**datetime:string**, timezone:DateTimeZone)
-// `date_create_from_format`(**format:string**, **datetime:string**, timezone:DateTimeZone)
-// `date_create_immutable_from_format`(**format:string**, **datetime:string**, timezone:DateTimeZone)
-// `date_parse`(**datetime:string**)
-// `date_parse_from_format`(**format:string**, **datetime:string**)
-// `date_format`(object:DateTimeInterface, **format:string**)
-// `date_modify`(object:DateTime, **modifier:string**)
-// `datefmt_parse`(formatter:IntlDateFormatter, **string:string**, _offset:?_)
-// `datefmt_localtime`(formatter:IntlDateFormatter, **string:string**, _offset:?_)
+		test('date_create', 1, date_create(''), date_create(NULL));
+		test('date_create_immutable', 1, date_create_immutable(''), date_create_immutable(NULL));
+		test('date_create_from_format', 1, date_create_from_format('', '2000-01-01'), date_create_from_format(NULL, '2000-01-01'));
+		test('date_create_from_format', 2, date_create_from_format('Y-m-d', ''), date_create_from_format('Y-m-d', NULL));
+		test('date_create_immutable_from_format', 1, date_create_immutable_from_format('', '2000-01-01'), date_create_immutable_from_format(NULL, '2000-01-01'));
+		test('date_create_immutable_from_format', 2, date_create_immutable_from_format('Y-m-d', ''), date_create_immutable_from_format('Y-m-d', NULL));
+		test('date_parse', 1, date_parse(''), date_parse(NULL));
+		test('date_parse_from_format', 1, date_parse_from_format('', '2000-01-01'), date_parse_from_format(NULL, '2000-01-01'));
+		test('date_parse_from_format', 2, date_parse_from_format('Y-m-d', ''), date_parse_from_format('Y-m-d', NULL));
+		$date = date_create('2000-01-01');
+		test('date_format', 2, date_format($date, ''), date_format($date, NULL));
+		// test('date_modify', 1, date_modify($date, ''), date_modify($date, NULL)); // Failed to parse time string
+		$fmt = datefmt_create('en_GB', IntlDateFormatter::SHORT, IntlDateFormatter::NONE, 'Europe/London', IntlDateFormatter::GREGORIAN);
+		test('datefmt_parse', 2, datefmt_parse($fmt, ''), datefmt_parse($fmt, NULL));
+		test('datefmt_localtime', 2, datefmt_localtime($fmt, ''), datefmt_localtime($fmt, NULL));
 
 	//--------------------------------------------------
 	// Images
@@ -948,35 +963,44 @@
 	//--------------------------------------------------
 	// Stream
 
-		// $sc = stream_socket_client('tcp://www.example.com:80');
-		// stream_set_timeout($sc, 0, 10);
-		// test('stream_socket_sendto', 2, stream_socket_sendto($sc, ''), stream_socket_sendto($sc, NULL));
-		// test('stream_socket_sendto', 4, stream_socket_sendto($sc, 'a', STREAM_OOB, ''), stream_socket_sendto($sc, 'a', STREAM_OOB, NULL));
-		// test('stream_get_line', 3, stream_get_line($sc, 0, ''), stream_get_line($sc, 0, NULL));
+		$sc = stream_socket_client('tcp://www.example.com:80');
+		stream_set_timeout($sc, 0, 10);
+		test('stream_socket_sendto', 2, stream_socket_sendto($sc, ''), stream_socket_sendto($sc, NULL));
+		test('stream_socket_sendto', 4, stream_socket_sendto($sc, 'a', STREAM_OOB, ''), stream_socket_sendto($sc, 'a', STREAM_OOB, NULL));
+		test('stream_get_line', 3, stream_get_line($sc, 0, ''), stream_get_line($sc, 0, NULL));
 
 	//--------------------------------------------------
 	// Socket
 
-		// $sc = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-		// socket_connect($sc, '127.0.0.1', 443);
-		// test('socket_write', 2, socket_write($sc, ''), socket_write($sc, NULL));
-		// test('socket_send', 2, socket_send($sc, '', 0, MSG_OOB), socket_send($sc, NULL, 0, MSG_OOB));
-		// test('socket_sendto', 2, socket_sendto($sc, '', 0, MSG_OOB, '127.0.0.1', 443), socket_sendto($sc, NULL, 0, MSG_OOB, '127.0.0.1', 443));
-		// // test('socket_sendto', 5, socket_sendto($sc, '', 0, MSG_OOB, '', 443), socket_sendto($sc, '', 0, MSG_OOB, NULL, 443)); // Unknown host
+		$sc = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+		socket_connect($sc, '127.0.0.1', 443);
+		test('socket_write', 2, socket_write($sc, ''), socket_write($sc, NULL));
+		test('socket_send', 2, socket_send($sc, '', 0, MSG_OOB), socket_send($sc, NULL, 0, MSG_OOB));
+		test('socket_sendto', 2, socket_sendto($sc, '', 0, MSG_OOB, '127.0.0.1', 443), socket_sendto($sc, NULL, 0, MSG_OOB, '127.0.0.1', 443));
+		// test('socket_sendto', 5, socket_sendto($sc, '', 0, MSG_OOB, '', 443), socket_sendto($sc, '', 0, MSG_OOB, NULL, 443)); // Unknown host
+		$ignore_nullable['socket_sendto'][] = '5:address';
 
 	//--------------------------------------------------
 	// Logging
 
-// `trigger_error`(**message:string**, error_level:int)
-// `user_error`(**message:string**, error_level:int)
-// `openlog`(**prefix:string**, flags:int, facility:int)
-// `syslog`(priority:int, **message:string**)
+		test('trigger_error', 1, trigger_error(''), trigger_error(NULL));
+		test('user_error', 1, user_error(''), user_error(NULL)); // Alias of trigger_error()
+		test('openlog', 1, openlog('', LOG_PID, LOG_SYSLOG), openlog(NULL, LOG_PID, LOG_SYSLOG));
+		test('syslog', 2, syslog(LOG_DEBUG, ''), syslog(LOG_DEBUG, NULL));
 
 	//--------------------------------------------------
 	// E-Mail
 
-// test('mail', 1, mail(''), mail(NULL));
-// test('mb_send_mail', 1, mb_send_mail(''), mb_send_mail(NULL));
+		// test('mail', 1, mail('', 'Subject', 'Message', 'From: user@example.com', '-fwebmaster@example.com'), mail(NULL, 'Subject', 'Message', 'From: user@example.com', '-fwebmaster@example.com'));
+		// test('mail', 2, mail('user@example.com', '', 'Message', 'From: user@example.com', '-fwebmaster@example.com'), mail('user@example.com', NULL, 'Message', 'From: user@example.com', '-fwebmaster@example.com'));
+		// test('mail', 3, mail('user@example.com', 'Subject', '', 'From: user@example.com', '-fwebmaster@example.com'), mail('user@example.com', 'Subject', NULL, 'From: user@example.com', '-fwebmaster@example.com'));
+		// test('mail', 4, mail('user@example.com', 'Subject', 'Message', '', '-fwebmaster@example.com'), mail('user@example.com', 'Subject', 'Message', NULL, '-fwebmaster@example.com'));
+		// test('mail', 5, mail('user@example.com', 'Subject', 'Message', 'From: user@example.com', ''), mail('user@example.com', 'Subject', 'Message', 'From: user@example.com', NULL));
+
+		// test('mb_send_mail', 1, mb_send_mail('', 'Subject', 'Message', 'From: user@example.com', '-fwebmaster@example.com'), mb_send_mail(NULL, 'Subject', 'Message', 'From: user@example.com', '-fwebmaster@example.com'));
+		// test('mb_send_mail', 2, mb_send_mail('user@example.com', '', 'Message', 'From: user@example.com', '-fwebmaster@example.com'), mb_send_mail('user@example.com', NULL, 'Message', 'From: user@example.com', '-fwebmaster@example.com'));
+		// test('mb_send_mail', 3, mb_send_mail('user@example.com', 'Subject', '', 'From: user@example.com', '-fwebmaster@example.com'), mb_send_mail('user@example.com', 'Subject', NULL, 'From: user@example.com', '-fwebmaster@example.com'));
+		// test('mb_send_mail', 4, mb_send_mail('user@example.com', 'Subject', 'Message', '', '-fwebmaster@example.com'), mb_send_mail('user@example.com', 'Subject', 'Message', NULL, '-fwebmaster@example.com'));
 
 //--------------------------------------------------
 // Check functions from functions-change.md
@@ -1063,17 +1087,7 @@
 					$type_names[] = $type->getName();
 				}
 
-					// 'array'
-					// 'int'
-					// 'bool'
-					// 'false'
-					// 'finfo'
-					// 'float'
-					// 'null'
-					// 'object'
-					// ... and 'mixed'
-
-				if (!$parameter_type->allowsNull() && in_array('string', $type_names)) {
+				if (!$parameter_type->allowsNull() && in_array('string', $type_names)) { // array, int, bool, false, finfo, float, null, object... and 'mixed'
 					$non_nullable[] = $parameter_id;
 				}
 

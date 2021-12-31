@@ -60,13 +60,13 @@
 - `transliterator_transliterate`(transliterator:Transliterator|string, **string:string**, start:int, end:int)
 - `mysqli_real_escape_string`(mysql:mysqli, **string:string**)
 - `mysqli_escape_string`(mysql:mysqli, **string:string**)
-- ? `pg_escape_string`(_connection:?_, **string:string**)
-- ? `pg_escape_bytea`(_connection:?_, **string:string**)
-- ? `pg_unescape_bytea`(**string:string**)
-- ? `pg_escape_literal`(_connection:?_, **string:string**)
-- ? `pg_escape_identifier`(_connection:?_, **string:string**)
-- ? `pg_copy_to`(connection:PgSql\Connection, **table_name:string**, **separator:string**, **null_as:string**)
-- ? `pg_copy_from`(connection:PgSql\Connection, **table_name:string**, rows:array, **separator:string**, **null_as:string**)
+- `pg_escape_string`(_connection:?_, **string:string**)
+- `pg_escape_bytea`(_connection:?_, **string:string**)
+- `pg_unescape_bytea`(**string:string**)
+- `pg_escape_literal`(_connection:?_, **string:string**)
+- `pg_escape_identifier`(_connection:?_, **string:string**)
+- `pg_copy_to`(connection:PgSql\Connection, table_name:string, separator:string, **null_as:string**)
+- `pg_copy_from`(connection:PgSql\Connection, table_name:string, rows:array, separator:string, **null_as:string**)
 
 ## String Modification
 
@@ -249,16 +249,15 @@
 
 ## Date
 
-- ? `date_create`(**datetime:string**, timezone:DateTimeZone)
-- ? `date_create_immutable`(**datetime:string**, timezone:DateTimeZone)
-- ? `date_create_from_format`(**format:string**, **datetime:string**, timezone:DateTimeZone)
-- ? `date_create_immutable_from_format`(**format:string**, **datetime:string**, timezone:DateTimeZone)
-- ? `date_parse`(**datetime:string**)
-- ? `date_parse_from_format`(**format:string**, **datetime:string**)
-- ? `date_format`(object:DateTimeInterface, **format:string**)
-- ? `date_modify`(object:DateTime, **modifier:string**)
-- ? `datefmt_parse`(formatter:IntlDateFormatter, **string:string**, _offset:?_)
-- ? `datefmt_localtime`(formatter:IntlDateFormatter, **string:string**, _offset:?_)
+- `date_create`(**datetime:string**, timezone:DateTimeZone)
+- `date_create_immutable`(**datetime:string**, timezone:DateTimeZone)
+- `date_create_from_format`(**format:string**, **datetime:string**, timezone:DateTimeZone)
+- `date_create_immutable_from_format`(**format:string**, **datetime:string**, timezone:DateTimeZone)
+- `date_parse`(**datetime:string**)
+- `date_parse_from_format`(**format:string**, **datetime:string**)
+- `date_format`(object:DateTimeInterface, **format:string**)
+- `datefmt_parse`(formatter:IntlDateFormatter, **string:string**, _offset:?_)
+- `datefmt_localtime`(formatter:IntlDateFormatter, **string:string**, _offset:?_)
 
 ## Images
 
@@ -365,23 +364,23 @@
 
 ## Stream
 
-- ? `stream_socket_sendto`(_socket:?_, **data:string**, flags:int, **address:string**)
-- ? `stream_get_line`(_stream:?_, length:int, **ending:string**)
+- `stream_socket_sendto`(_socket:?_, **data:string**, flags:int, **address:string**)
+- `stream_get_line`(_stream:?_, length:int, **ending:string**)
 
 ## Socket
 
-- ? `socket_write`(socket:Socket, **data:string**, length:int)
-- ? `socket_send`(socket:Socket, **data:string**, length:int, flags:int)
-- ? `socket_sendto`(socket:Socket, **data:string**, length:int, flags:int, address:string, port:int)
+- `socket_write`(socket:Socket, **data:string**, length:int)
+- `socket_send`(socket:Socket, **data:string**, length:int, flags:int)
+- `socket_sendto`(socket:Socket, **data:string**, length:int, flags:int, address:string, port:int)
 
 ## Logging
 
-- ? `trigger_error`(**message:string**, error_level:int)
-- ? `user_error`(**message:string**, error_level:int)
-- ? `openlog`(**prefix:string**, flags:int, facility:int)
-- ? `syslog`(priority:int, **message:string**)
+- `trigger_error`(**message:string**, error_level:int)
+- `user_error`(**message:string**, error_level:int)
+- `openlog`(**prefix:string**, flags:int, facility:int)
+- `syslog`(priority:int, **message:string**)
 
 ## E-Mail
 
-- ? `mail`(**to:string**, **subject:string**, **message:string**, **additional_headers:array|string**, **additional_params:string**)
-- ? `mb_send_mail`(**to:string**, **subject:string**, **message:string**, **additional_headers:array|string**, **additional_params:string**)
+- `mail`(**to:string**, **subject:string**, **message:string**, **additional_headers:array|string**, **additional_params:string**)
+- `mb_send_mail`(**to:string**, **subject:string**, **message:string**, **additional_headers:array|string**, additional_params:string)

@@ -49,6 +49,8 @@ socket_write($socket, $name);
 xmlwriter_text($writer, $name);
 </code>
 
+And sometimes a developer may explicitly use //NULL// to skip certain parameters, e.g. //$additional_headers// in //mail()//.
+
 Currently this affects those using PHP 8.1 with //E_DEPRECATED//, but it implies everyone will need to modify their code in the future.
 
 It also applies even if they are not using //strict_types=1//.
@@ -73,7 +75,9 @@ Does the parameter work with //NULL//, in the same way that it would if an empty
   - //substr_count()// requires a non-empty string //$needle// (continue to deprecate //NULL//).
   - //mb_convert_encoding()// requires a valid encoding for //$to_encoding// (continue to deprecate //NULL//).
 
-You could argue some function parameters should not accept an empty string either (e.g. //strpos()// accepting an empty string for //$needle//), but that would require different RFCs, where backwards compatibility would need to be discussed.
+You could argue some function parameters should not accept an empty string (e.g. //strrpos()// accepting an empty string for //$needle//), but those should be addressed in a different RFC, involving a discussion on backwards compatibility for every change.
+
+One set of candidates that could be removed are functions like //sodium_crypto_box_open()// where a blank //$ciphertext// will always return //false// (for failure).
 
 ===== Backward Incompatible Changes =====
 

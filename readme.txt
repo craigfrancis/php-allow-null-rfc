@@ -1,10 +1,10 @@
 ====== PHP RFC: Allow NULL ======
 
-  * Version: 1.0
+  * Version: 1.1
   * Voting Start: ?
   * Voting End: ?
   * RFC Started: 2021-12-23
-  * RFC Updated: 2021-12-23
+  * RFC Updated: 2021-12-31
   * Author: Craig Francis, craig#at#craigfrancis.co.uk
   * Status: Draft
   * First Published at: https://wiki.php.net/rfc/allow_null
@@ -57,17 +57,21 @@ It also applies even if the developer is not using //strict_types=1//.
 
 And while the individual changes are easy - there are many of them, they are difficult to find, and often pointless (e.g. //urlencode(strval($name))//).
 
-Without the changes listed below, developers will need to either - use these deprecation warnings, or use strict Static Analysis (one that can determine when a variable can be //NULL//; e.g. Psalm at [[https://psalm.dev/docs/running_psalm/error_levels/|level 3]], with no baseline).
+Without the changes below, developers will need to either - use these deprecation notices, or use very strict Static Analysis (one that can determine when a variable can be //NULL//; e.g. Psalm at [[https://psalm.dev/docs/running_psalm/error_levels/|level 3]], with no baseline).
 
 ===== Proposal =====
 
-Update **some** internal function parameters to accept NULL, to reduce the burden for developers upgrading.
+Update **some** internal function parameters to accept //NULL//, to reduce the burden for developers upgrading.
 
-While this is in Draft, the [[https://github.com/craigfrancis/php-allow-null-rfc/blob/main/functions-change.md|list of functions are hosted on GitHub]] (suggestions and pull requests welcome).
+While this is in Draft, the [[https://github.com/craigfrancis/php-allow-null-rfc/blob/main/functions-change.md|list of functions are hosted on GitHub]].
+
+Only the parameters in **bold** would be changed.
+
+Suggestions and pull requests welcome.
 
 ===== Decision Process =====
 
-Does the parameter work with //NULL//, in the same way that it would if an empty string is provided? e.g.
+Does the parameter work with //NULL//, in the same way it would with an empty string? e.g.
 
   - //preg_match()// should continue to deprecate //NULL// for //$pattern//, whereas //$subject// should accept //NULL//.
   - //hash_file()// should continue to deprecate //NULL// for the //$filename//.
@@ -107,7 +111,7 @@ Is the [[https://github.com/craigfrancis/php-allow-null-rfc/blob/main/functions-
 
 ===== Future Scope =====
 
-Some functions parameters could be updated to complain when an Empty String or NULL is provided.
+Some functions parameters could be updated to complain when an Empty String or //NULL// is provided.
 
 ===== Voting =====
 

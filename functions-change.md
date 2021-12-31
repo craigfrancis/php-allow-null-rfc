@@ -1,5 +1,7 @@
 # To Change
 
+Only change parameters which are in **bold**.
+
 ## Encoding/Decoding
 
 - `urlencode`(**string:string**)

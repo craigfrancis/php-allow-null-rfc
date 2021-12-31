@@ -181,6 +181,9 @@
 		test('mysqli_real_escape_string', 2, mysqli_real_escape_string($mysqli, ''), mysqli_real_escape_string($mysqli, NULL));
 		test('mysqli_escape_string', 2, mysqli_escape_string($mysqli, ''), mysqli_escape_string($mysqli, NULL)); // Alias of mysqli_real_escape_string
 
+		/*
+			/usr/local/opt/postgresql/bin/postgres -D /usr/local/var/postgres
+		*/
 		$pg = pg_connect('dbname=test user=craig');
 		test('pg_escape_string', 2, pg_escape_string($pg, ''), pg_escape_string($pg, NULL));
 		test('pg_escape_bytea', 2, pg_escape_bytea($pg, ''), pg_escape_bytea($pg, NULL));

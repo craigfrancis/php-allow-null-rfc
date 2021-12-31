@@ -925,9 +925,9 @@
 
 				$parameters[] = $parameter->getName() . ':?';
 
-				// if (!$parameter->allowsNull()) {
+				if (!$parameter->allowsNull()) {
 					$unknowns[] = $parameter_id;
-				// }
+				}
 
 			}
 

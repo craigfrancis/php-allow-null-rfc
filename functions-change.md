@@ -112,6 +112,7 @@
 - `mb_split`(**pattern:string**, **string:string**, limit:int)
 - `sodium_pad`(**string:string**, block_size:int)
 - `grapheme_substr`(**string:string**, offset:int, length:int)
+- `grapheme_extract`(**haystack:string**, size:int, type:int, offset:int, _next:?_)
 
 ## String Position
 
@@ -240,16 +241,24 @@
 - `msgfmt_parse`(formatter:MessageFormatter, **string:string**)
 - `msgfmt_parse_message`(**locale:string**, **pattern:string**, **message:string**)
 
-## E-Mail
-
-- ? `mail`(**to:string**, **subject:string**, **message:string**, **additional_headers:array|string**, **additional_params:string**)
-- ? `mb_send_mail`(**to:string**, **subject:string**, **message:string**, **additional_headers:array|string**, **additional_params:string**)
-
 ## CSV
 
 - `str_getcsv`(**string:string**, **separator:string**, **enclosure:string**, **escape:string**)
 - `fputcsv`(_stream:?_, fields:array, separator:string, enclosure:string, **escape:string**, eol:string)
 - `fgetcsv`(_stream:?_, length:int, separator:string, enclosure:string, **escape:string**)
+
+## Date
+
+- ? `date_create`(**datetime:string**, timezone:DateTimeZone)
+- ? `date_create_immutable`(**datetime:string**, timezone:DateTimeZone)
+- ? `date_create_from_format`(**format:string**, **datetime:string**, timezone:DateTimeZone)
+- ? `date_create_immutable_from_format`(**format:string**, **datetime:string**, timezone:DateTimeZone)
+- ? `date_parse`(**datetime:string**)
+- ? `date_parse_from_format`(**format:string**, **datetime:string**)
+- ? `date_format`(object:DateTimeInterface, **format:string**)
+- ? `date_modify`(object:DateTime, **modifier:string**)
+- ? `datefmt_parse`(formatter:IntlDateFormatter, **string:string**, _offset:?_)
+- ? `datefmt_localtime`(formatter:IntlDateFormatter, **string:string**, _offset:?_)
 
 ## Images
 
@@ -268,17 +277,6 @@
 - `password_hash`(**password:string**, algo:string|int|null, options:array)
 - `password_needs_rehash`(**hash:string**, algo:string|int|null, options:array)
 - `password_verify`(**password:string**, **hash:string**)
-
-## Stream
-
-- ? `stream_socket_sendto`(_socket:?_, **data:string**, flags:int, **address:string**)
-- ? `stream_get_line`(_stream:?_, length:int, **ending:string**)
-
-## Socket
-
-- ? `socket_write`(socket:Socket, **data:string**, length:int)
-- ? `socket_send`(socket:Socket, **data:string**, length:int, flags:int)
-- ? `socket_sendto`(socket:Socket, **data:string**, length:int, flags:int, address:string, port:int)
 
 ## BC Math
 
@@ -357,30 +355,33 @@
 - `sodium_crypto_stream_xor`(**message:string**, nonce:string, key:string)
 - `sodium_crypto_stream_xchacha20_xor`(**message:string**, nonce:string, key:string)
 
----
+## DNS
 
-# Maybe
+- `gethostbyname`(**hostname:string**)
+- `gethostbynamel`(**hostname:string**)
+- `dns_get_record`(**hostname:string**, type:int, _authoritative_name_servers:?_, _additional_records:?_, raw:bool)
+- `dns_get_mx`(**hostname:string**, _hosts:?_, _weights:?_)
+- `getmxrr`(**hostname:string**, _hosts:?_, _weights:?_)
+
+## Stream
+
+- ? `stream_socket_sendto`(_socket:?_, **data:string**, flags:int, **address:string**)
+- ? `stream_get_line`(_stream:?_, length:int, **ending:string**)
+
+## Socket
+
+- ? `socket_write`(socket:Socket, **data:string**, length:int)
+- ? `socket_send`(socket:Socket, **data:string**, length:int, flags:int)
+- ? `socket_sendto`(socket:Socket, **data:string**, length:int, flags:int, address:string, port:int)
+
+## Logging
 
 - ? `trigger_error`(**message:string**, error_level:int)
 - ? `user_error`(**message:string**, error_level:int)
-- ? `date_create`(**datetime:string**, timezone:DateTimeZone)
-- ? `date_create_immutable`(**datetime:string**, timezone:DateTimeZone)
-- ? `date_create_from_format`(**format:string**, **datetime:string**, timezone:DateTimeZone)
-- ? `date_create_immutable_from_format`(**format:string**, **datetime:string**, timezone:DateTimeZone)
-- ? `date_parse`(**datetime:string**)
-- ? `date_parse_from_format`(**format:string**, **datetime:string**)
-- ? `date_format`(object:DateTimeInterface, **format:string**)
-- ? `date_modify`(object:DateTime, **modifier:string**)
-- ? `datefmt_parse`(formatter:IntlDateFormatter, **string:string**, _offset:?_)
-- ? `datefmt_localtime`(formatter:IntlDateFormatter, **string:string**, _offset:?_)
-- ? `grapheme_extract`(**haystack:string**, size:int, type:int, offset:int, _next:?_)
-- ? `gethostbyaddr`(**ip:string**)
-- ? `gethostbyname`(**hostname:string**)
-- ? `gethostbynamel`(**hostname:string**)
-- ? `dns_check_record`(**hostname:string**, **type:string**)
-- ? `checkdnsrr`(**hostname:string**, **type:string**)
-- ? `dns_get_record`(**hostname:string**, type:int, _authoritative_name_servers:?_, _additional_records:?_, raw:bool)
-- ? `dns_get_mx`(**hostname:string**, _hosts:?_, _weights:?_)
-- ? `getmxrr`(**hostname:string**, _hosts:?_, _weights:?_)
 - ? `openlog`(**prefix:string**, flags:int, facility:int)
 - ? `syslog`(priority:int, **message:string**)
+
+## E-Mail
+
+- ? `mail`(**to:string**, **subject:string**, **message:string**, **additional_headers:array|string**, **additional_params:string**)
+- ? `mb_send_mail`(**to:string**, **subject:string**, **message:string**, **additional_headers:array|string**, **additional_params:string**)

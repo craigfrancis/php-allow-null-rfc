@@ -905,16 +905,17 @@
 					$type_names[] = $type->getName();
 				}
 
-					// array
-					// int
-					// bool
-					// false
-					// finfo
-					// float
-					// null
-					// object
+					// 'array'
+					// 'int'
+					// 'bool'
+					// 'false'
+					// 'finfo'
+					// 'float'
+					// 'null'
+					// 'object'
+					// ... and 'mixed'
 
-				if ((!$parameter_type->allowsNull()) && (in_array('string', $type_names) || in_array('mixed', $type_names))) {
+				if (!$parameter_type->allowsNull() && in_array('string', $type_names)) {
 					$non_nullable[] = $parameter_id;
 				}
 

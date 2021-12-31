@@ -27,15 +27,22 @@
 
 		$error_line = ($GLOBALS['null_errors'][$function][$arg] ?? NULL);
 
-		if ($a instanceof XMLParser && $b instanceof XMLParser) {
+		if ($a instanceof PSpell\Dictionary && $b instanceof PSpell\Dictionary) {
 			$a = '-';
 			$b = '-';
-		}
-
-		if ($a instanceof SimpleXMLElement && $b instanceof SimpleXMLElement) {
+		} else if ($a instanceof PSpell\Config && $b instanceof PSpell\Config) {
+			$a = '-';
+			$b = '-';
+		} else if ($a instanceof XMLParser && $b instanceof XMLParser) {
+			$a = '-';
+			$b = '-';
+		} else if ($a instanceof SimpleXMLElement && $b instanceof SimpleXMLElement) {
 			$a = $a->asXML();
 			$b = $b->asXML();
 		}
+
+		// if ($a === false) echo $called_from_line . ' ' . $function . ' - False A.' . "\n";
+		// if ($b === false) echo $called_from_line . ' ' . $function . ' - False B.' . "\n";
 
 		if ($a !== $b) {
 			echo $called_from_line . ' ' . $function . ' - Values do not match.' . "\n";
@@ -147,6 +154,8 @@
 	// test('pg_unescape_bytea', 1, pg_unescape_bytea(''), pg_unescape_bytea(NULL));
 	// test('pg_escape_literal', 1, pg_escape_literal(''), pg_escape_literal(NULL));
 	// test('pg_escape_identifier', 1, pg_escape_identifier(''), pg_escape_identifier(NULL));
+
+
 	test('strtoupper', 1, strtoupper(''), strtoupper(NULL));
 	test('strtolower', 1, strtolower(''), strtolower(NULL));
 	test('ucfirst', 1, ucfirst(''), ucfirst(NULL));
@@ -221,6 +230,8 @@
 	// test('sodium_add', 2, sodium_add($n, $b), sodium_add($n, $b)); // Uncaught SodiumException: PHP strings are required
 	// test('sodium_increment', 1, sodium_increment($b), sodium_increment($n)); // Uncaught SodiumException: a PHP string is required
 	test('grapheme_substr', 1, grapheme_substr('', 0), grapheme_substr(NULL, 0));
+
+
 	test('strpos', 1, strpos('', 'a'), strpos(NULL, 'a'));
 	test('strpos', 2, strpos('a', ''), strpos('a', NULL));
 	test('strrpos', 1, strrpos('', 'a'), strrpos(NULL, 'a'));
@@ -249,6 +260,8 @@
 	test('grapheme_stripos', 2, grapheme_stripos('a', ''), grapheme_stripos('a', NULL));
 	test('grapheme_strripos', 1, grapheme_strripos('', 'a'), grapheme_strripos(NULL, 'a'));
 	test('grapheme_strripos', 2, grapheme_strripos('a', ''), grapheme_strripos('a', NULL));
+
+
 	test('strcmp', 1, strcmp('', 'a'), strcmp(NULL, 'a'));
 	test('strcmp', 2, strcmp('a', ''), strcmp('a', NULL));
 	test('strncmp', 1, strncmp('', 'a', 1), strncmp(NULL, 'a', 1));
@@ -285,6 +298,8 @@
 	test('similar_text', 2, similar_text('a', ''), similar_text('a', NULL));
 	test('sodium_memcmp', 1, sodium_memcmp('', ''), sodium_memcmp(NULL, ''));
 	test('sodium_memcmp', 2, sodium_memcmp('', ''), sodium_memcmp('', NULL));
+
+
 	test('strlen', 1, strlen(''), strlen(NULL));
 	test('strstr', 1, strstr('', 'a'), strstr(NULL, 'a'));
 	test('strstr', 2, strstr('a', ''), strstr('a', NULL));
@@ -326,6 +341,8 @@
 	test('grapheme_strstr', 2, grapheme_strstr('a', ''), grapheme_strstr('a', NULL));
 	test('grapheme_stristr', 1, grapheme_stristr('', 'a'), grapheme_stristr(NULL, 'a'));
 	test('grapheme_stristr', 2, grapheme_stristr('a', ''), grapheme_stristr('a', NULL));
+
+
 	// test('preg_match', 1, preg_match('', 'a'), preg_match(NULL, 'a')); // Empty regular expression
 	$ignore_nullable['preg_match'][] = '1:pattern';
 	test('preg_match', 2, preg_match('/a/', ''), preg_match('/a/', NULL));
@@ -368,9 +385,13 @@
 	test('mb_ereg_match', 2, mb_ereg_match('a', ''), mb_ereg_match('a', NULL));
 	test('mb_ereg_search_init', 1, mb_ereg_search_init('', 'a'), mb_ereg_search_init(NULL, 'a'));
 	// test('mb_ereg_search_init', 2, mb_ereg_search_init('a', ''), mb_ereg_search_init('a', NULL)); // must not be empty
+
+
 	test('normalizer_normalize', 1, normalizer_normalize(''), normalizer_normalize(NULL));
 	test('normalizer_is_normalized', 1, normalizer_is_normalized(''), normalizer_is_normalized(NULL));
 	test('normalizer_get_raw_decomposition', 1, normalizer_get_raw_decomposition(''), normalizer_get_raw_decomposition(NULL));
+
+
 	// test('hash', 1, hash('', 'a'), hash(NULL, 'a')); // must be a valid hashing algorithm
 	$ignore_nullable['hash'][] = '1:algo';
 	test('hash', 2, hash('sha256', ''), hash('sha256', NULL));
@@ -391,6 +412,8 @@
 	test('sha1', 1, sha1(''), sha1(NULL));
 	test('crypt', 1, crypt('', '$5$rounds=5000$cMzt9CbBEXf9AAzvFj$'), crypt(NULL, '$5$rounds=5000$cMzt9CbBEXf9AAzvFj$'));
 	test('crypt', 2, crypt('a', ''), crypt('a', NULL)); // Oddity, should an empty salt be allowed?
+
+
 	test('basename', 1, basename(''), basename(NULL));
 	test('basename', 2, basename('/', ''), basename('/', NULL));
 	test('dirname', 1, dirname(''), dirname(NULL));
@@ -399,6 +422,8 @@
 	test('fwrite', 2, fwrite($fp, ''), fwrite($fp, NULL));
 	test('fputs', 2, fputs($fp, ''), fputs($fp, NULL)); // Alias of fwrite
 	fclose($fp);
+
+
 	// test('setcookie', 1, setcookie(''), setcookie(NULL)); // cannot be empty
 	$ignore_nullable['setcookie'][] = '1:name';
 	test('setcookie', 2, setcookie('a', ''), setcookie('a', NULL));
@@ -411,6 +436,8 @@
 	test('setrawcookie', 5, setrawcookie('a', 'a', 0, '/', ''), setrawcookie('a', 'a', 0, '/', NULL)); // domain
 	test('output_add_rewrite_var', 1, output_add_rewrite_var('', 'a'), output_add_rewrite_var(NULL, 'a'));
 	test('output_add_rewrite_var', 2, output_add_rewrite_var('a', ''), output_add_rewrite_var('a', NULL));
+
+
 	test('parse_url', 1, parse_url(''), parse_url(NULL));
 	$result = [];
 	test('parse_str', 1, parse_str('', $result), parse_str(NULL, $result));
@@ -426,8 +453,12 @@
 	test('msgfmt_parse_message', 1, msgfmt_parse_message('', '{0,number,integer}', '123'), msgfmt_parse_message(NULL, '{0,number,integer}', '123'));
 	test('msgfmt_parse_message', 2, msgfmt_parse_message('en_GB', '', '123'), msgfmt_parse_message('en_GB', NULL, '123'));
 	test('msgfmt_parse_message', 3, msgfmt_parse_message('en_GB', '{0,number,integer}', ''), msgfmt_parse_message('en_GB', '{0,number,integer}', NULL));
+
+
 	// test('mail', 1, mail(''), mail(NULL));
 	// test('mb_send_mail', 1, mb_send_mail(''), mb_send_mail(NULL));
+
+
 	test('str_getcsv', 1, str_getcsv('', ',', '"', '\\'), str_getcsv(NULL, ',', '"', '\\'));
 	test('str_getcsv', 2, str_getcsv('a', '', '"', '\\'), str_getcsv('a', NULL, '"', '\\'));
 	test('str_getcsv', 3, str_getcsv('a', ',', '', '\\'), str_getcsv('a', ',', NULL, '\\'));
@@ -449,6 +480,8 @@
 	fclose($fp);
 	$im = imagecreate(100, 100);
 	$bg = imagecolorallocate($im, 0, 0, 0);
+
+
 	test('imagechar', 5, imagechar($im, 0, 0, 0, '', $bg), imagechar($im, 0, 0, 0, NULL, $bg));
 	test('imagecharup', 5, imagecharup($im, 0, 0, 0, '', $bg), imagecharup($im, 0, 0, 0, NULL, $bg));
 	test('imagestring', 5, imagestring($im, 0, 0, 0, '', $bg), imagestring($im, 0, 0, 0, NULL, $bg));
@@ -461,11 +494,15 @@
 	test('imagettfbbox', 4, imagettfbbox(0, 0, './a/gd-tuffy.ttf', ''), imagettfbbox(0, 0, './a/gd-tuffy.ttf', NULL));
 	$ignore_nullable['imagettftext'][] = '7:font_filename';
 	test('imagettftext', 8, imagettftext($im, 0, 0, 0, 0, $bg, './a/gd-tuffy.ttf', ''), imagettftext($im, 0, 0, 0, 0, $bg, './a/gd-tuffy.ttf', NULL));
+
+
 	test('password_get_info', 1, password_get_info(''), password_get_info(NULL));
 	$a = password_hash('', PASSWORD_DEFAULT); $b = password_hash(NULL, PASSWORD_DEFAULT); test('password_hash', 1, '', ''); // Do not check output values, as salt changes
 	test('password_needs_rehash', 1, password_needs_rehash('', PASSWORD_DEFAULT), password_needs_rehash(NULL, PASSWORD_DEFAULT));
 	test('password_verify', 1, password_verify('', '$2y$10$5bTKaOpLhLzIJHuheLWXrODkrn0eVQ870GesIXvqppD1ShoMYMBeS'), password_verify(NULL, '$2y$10$5bTKaOpLhLzIJHuheLWXrODkrn0eVQ870GesIXvqppD1ShoMYMBeS'));
 	test('password_verify', 2, password_verify('a', ''), password_verify('a', NULL));
+
+
 	// $sc = stream_socket_client('tcp://www.example.com:80');
 	// stream_set_timeout($sc, 0, 10);
 	// test('stream_socket_sendto', 2, stream_socket_sendto($sc, ''), stream_socket_sendto($sc, NULL));
@@ -477,6 +514,8 @@
 	// test('socket_send', 2, socket_send($sc, '', 0, MSG_OOB), socket_send($sc, NULL, 0, MSG_OOB));
 	// test('socket_sendto', 2, socket_sendto($sc, '', 0, MSG_OOB, '127.0.0.1', 443), socket_sendto($sc, NULL, 0, MSG_OOB, '127.0.0.1', 443));
 	// // test('socket_sendto', 5, socket_sendto($sc, '', 0, MSG_OOB, '', 443), socket_sendto($sc, '', 0, MSG_OOB, NULL, 443)); // Unknown host
+
+
 	test('bcadd', 1, bcadd('', '1'), bcadd(NULL, '1'));
 	test('bcadd', 2, bcadd('1', ''), bcadd('1', NULL));
 	test('bcsub', 1, bcsub('', '1'), bcsub(NULL, '1'));
@@ -498,6 +537,8 @@
 	test('bcsqrt', 1, bcsqrt(''), bcsqrt(NULL));
 	test('bccomp', 1, bccomp('', '1'), bccomp(NULL, '1'));
 	test('bccomp', 2, bccomp('1', ''), bccomp('1', NULL));
+
+
 	test('simplexml_load_string', 1, simplexml_load_string(''), simplexml_load_string(NULL));
 	// test('simplexml_load_string', 2, simplexml_load_string('<a></a>', ''), simplexml_load_string('<a></a>', NULL)); // must be a class name
 	test('simplexml_load_string', 4, simplexml_load_string('<a></a>', SimpleXMLElement::class, 0, ''), simplexml_load_string('<a></a>', SimpleXMLElement::class, 0, NULL));
@@ -536,6 +577,254 @@
 	// test('xmlwriter_write_dtd_entity', 2, xmlwriter_write_dtd_entity($x, '', 'a'), xmlwriter_write_dtd_entity($x, NULL, 'a')); // must be a valid element name
 	$ignore_nullable['xmlwriter_write_dtd_entity'][] = '2:name';
 	test('xmlwriter_write_dtd_entity', 3, xmlwriter_write_dtd_entity($x, 'a', ''), xmlwriter_write_dtd_entity($x, 'a', NULL));
+
+
+	// test('pspell_new', 1, pspell_new(''), pspell_new(NULL)); // No word lists can be found for the language
+	$ignore_nullable['pspell_new'][] = '1:language';
+	test('pspell_new', 2, pspell_new('en', '', 'jargon', 'utf-8'), pspell_new('en', NULL, 'jargon', 'utf-8'));
+	test('pspell_new', 3, pspell_new('en', 'british', '', 'utf-8'), pspell_new('en', 'british', NULL, 'utf-8'));
+	test('pspell_new', 4, pspell_new('en', 'british', 'jargon', ''), pspell_new('en', 'british', 'jargon', NULL));
+	test('pspell_new_personal', 1, pspell_new_personal('', 'en', 'british', 'jargon', 'utf-8'), pspell_new_personal(NULL, 'en', 'british', 'jargon', 'utf-8'));
+	// test('pspell_new_personal', 2, pspell_new_personal('./pspell.txt', '', 'british', 'jargon', 'utf-8'), pspell_new_personal('./pspell.txt', NULL, 'british', 'jargon', 'utf-8'));
+	$ignore_nullable['pspell_new_personal'][] = '2:language';
+	test('pspell_new_personal', 3, pspell_new_personal('./pspell.txt', 'en', '', 'jargon', 'utf-8'), pspell_new_personal('./pspell.txt', 'en', NULL, 'jargon', 'utf-8'));
+	test('pspell_new_personal', 4, pspell_new_personal('./pspell.txt', 'en', 'british', '', 'utf-8'), pspell_new_personal('./pspell.txt', 'en', 'british', NULL, 'utf-8'));
+	test('pspell_new_personal', 5, pspell_new_personal('./pspell.txt', 'en', 'british', 'jargon', ''), pspell_new_personal('./pspell.txt', 'en', 'british', 'jargon', NULL));
+	$ps = pspell_new_personal('./pspell.txt', 'en', 'british', '', 'utf-8');
+	test('pspell_check', 2, pspell_check($ps, ''), pspell_check($ps, NULL));
+	test('pspell_suggest', 2, pspell_suggest($ps, ''), pspell_suggest($ps, NULL));
+	// test('pspell_store_replacement', 2, pspell_store_replacement($ps, '', 'b'), pspell_store_replacement($ps, NULL, 'b')); // 503 Service Unavailable
+	$ignore_nullable['pspell_store_replacement'][] = '2:misspelled';
+	test('pspell_store_replacement', 3, pspell_store_replacement($ps, 'a', ''), pspell_store_replacement($ps, 'a', NULL));
+	test('pspell_add_to_personal', 2, pspell_add_to_personal($ps, ''), pspell_add_to_personal($ps, NULL));
+	test('pspell_add_to_session', 2, pspell_add_to_session($ps, ''), pspell_add_to_session($ps, NULL));
+	test('pspell_config_create', 1, pspell_config_create('', 'british', 'jargon', 'utf-8'), pspell_config_create(NULL, 'british', 'jargon', 'utf-8'));
+	test('pspell_config_create', 2, pspell_config_create('en', '', 'jargon', 'utf-8'), pspell_config_create('en', NULL, 'jargon', 'utf-8'));
+	test('pspell_config_create', 3, pspell_config_create('en', 'british', '', 'utf-8'), pspell_config_create('en', 'british', NULL, 'utf-8'));
+	test('pspell_config_create', 4, pspell_config_create('en', 'british', 'jargon', ''), pspell_config_create('en', 'british', 'jargon', NULL));
+	$c = pspell_config_create('en', 'british', 'jargon', 'uf-8');
+	test('pspell_config_personal', 2, pspell_config_personal($c, ''), pspell_config_personal($c, NULL));
+	test('pspell_config_dict_dir', 2, pspell_config_dict_dir($c, ''), pspell_config_dict_dir($c, NULL));
+	test('pspell_config_data_dir', 2, pspell_config_data_dir($c, ''), pspell_config_data_dir($c, NULL));
+	test('pspell_config_repl', 2, pspell_config_repl($c, ''), pspell_config_repl($c, NULL));
+
+
+	$aead_aes256gcm_key = sodium_crypto_aead_aes256gcm_keygen();
+	$aead_aes256gcm_ad = random_bytes(32);
+	$aead_aes256gcm_nonce = random_bytes(SODIUM_CRYPTO_AEAD_AES256GCM_NPUBBYTES);
+	test('sodium_crypto_aead_aes256gcm_encrypt', 1, sodium_crypto_aead_aes256gcm_encrypt('', $aead_aes256gcm_ad, $aead_aes256gcm_nonce, $aead_aes256gcm_key), sodium_crypto_aead_aes256gcm_encrypt(NULL, $aead_aes256gcm_ad, $aead_aes256gcm_nonce, $aead_aes256gcm_key));
+	test('sodium_crypto_aead_aes256gcm_encrypt', 2, sodium_crypto_aead_aes256gcm_encrypt('a', '', $aead_aes256gcm_nonce, $aead_aes256gcm_key), sodium_crypto_aead_aes256gcm_encrypt('a', NULL, $aead_aes256gcm_nonce, $aead_aes256gcm_key));
+	// test('sodium_crypto_aead_aes256gcm_encrypt', 3, sodium_crypto_aead_aes256gcm_encrypt('a', $aead_aes256gcm_ad, '', $aead_aes256gcm_key), sodium_crypto_aead_aes256gcm_encrypt('a', $aead_aes256gcm_ad, NULL, $aead_aes256gcm_key)); // must be SODIUM_CRYPTO_AEAD_AES256GCM_NPUBBYTES bytes long
+	// test('sodium_crypto_aead_aes256gcm_encrypt', 4, sodium_crypto_aead_aes256gcm_encrypt('a', $aead_aes256gcm_ad, $aead_aes256gcm_nonce, ''), sodium_crypto_aead_aes256gcm_encrypt('a', $aead_aes256gcm_ad, $aead_aes256gcm_nonce, NULL)); // must be SODIUM_CRYPTO_AEAD_AES256GCM_KEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_aead_aes256gcm_encrypt'][] = '3:nonce';
+	$ignore_nullable['sodium_crypto_aead_aes256gcm_encrypt'][] = '4:key';
+	$data = sodium_crypto_aead_aes256gcm_encrypt('a', $aead_aes256gcm_ad, $aead_aes256gcm_nonce, $aead_aes256gcm_key);
+	test('sodium_crypto_aead_aes256gcm_decrypt', 1, sodium_crypto_aead_aes256gcm_decrypt('', $aead_aes256gcm_ad, $aead_aes256gcm_nonce, $aead_aes256gcm_key), sodium_crypto_aead_aes256gcm_decrypt(NULL, $aead_aes256gcm_ad, $aead_aes256gcm_nonce, $aead_aes256gcm_key));
+	test('sodium_crypto_aead_aes256gcm_decrypt', 2, sodium_crypto_aead_aes256gcm_decrypt($data, '', $aead_aes256gcm_nonce, $aead_aes256gcm_key), sodium_crypto_aead_aes256gcm_decrypt($data, NULL, $aead_aes256gcm_nonce, $aead_aes256gcm_key));
+	// test('sodium_crypto_aead_aes256gcm_decrypt', 3, sodium_crypto_aead_aes256gcm_decrypt($data, $aead_aes256gcm_ad, '', $aead_aes256gcm_key), sodium_crypto_aead_aes256gcm_decrypt($data, $aead_aes256gcm_ad, NULL, $aead_aes256gcm_key)); // must be SODIUM_CRYPTO_AEAD_AES256GCM_NPUBBYTES bytes long
+	// test('sodium_crypto_aead_aes256gcm_decrypt', 4, sodium_crypto_aead_aes256gcm_decrypt($data, $aead_aes256gcm_ad, $aead_aes256gcm_nonce, ''), sodium_crypto_aead_aes256gcm_decrypt($data, $aead_aes256gcm_ad, $aead_aes256gcm_nonce, NULL)); // must be SODIUM_CRYPTO_AEAD_AES256GCM_KEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_aead_aes256gcm_decrypt'][] = '3:nonce';
+	$ignore_nullable['sodium_crypto_aead_aes256gcm_decrypt'][] = '4:key';
+
+	$aead_chacha20poly1305_key = sodium_crypto_aead_chacha20poly1305_keygen();
+	$aead_chacha20poly1305_ad = random_bytes(32);
+	$aead_chacha20poly1305_nonce = random_bytes(SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_NPUBBYTES);
+	test('sodium_crypto_aead_chacha20poly1305_encrypt', 1, sodium_crypto_aead_chacha20poly1305_encrypt('', $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key), sodium_crypto_aead_chacha20poly1305_encrypt(NULL, $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key));
+	test('sodium_crypto_aead_chacha20poly1305_encrypt', 2, sodium_crypto_aead_chacha20poly1305_encrypt('a', '', $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key), sodium_crypto_aead_chacha20poly1305_encrypt('a', NULL, $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key));
+	// test('sodium_crypto_aead_chacha20poly1305_encrypt', 3, sodium_crypto_aead_chacha20poly1305_encrypt('a', $aead_chacha20poly1305_ad, '', $aead_chacha20poly1305_key), sodium_crypto_aead_chacha20poly1305_encrypt('a', $aead_chacha20poly1305_ad, NULL, $aead_chacha20poly1305_key)); // must be SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_NPUBBYTES bytes long
+	// test('sodium_crypto_aead_chacha20poly1305_encrypt', 4, sodium_crypto_aead_chacha20poly1305_encrypt('a', $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, ''), sodium_crypto_aead_chacha20poly1305_encrypt('a', $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, NULL)); // must be SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_KEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_aead_chacha20poly1305_encrypt'][] = '3:nonce';
+	$ignore_nullable['sodium_crypto_aead_chacha20poly1305_encrypt'][] = '4:key';
+	$data = sodium_crypto_aead_chacha20poly1305_encrypt('a', $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key);
+	test('sodium_crypto_aead_chacha20poly1305_decrypt', 1, sodium_crypto_aead_chacha20poly1305_decrypt('', $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key), sodium_crypto_aead_chacha20poly1305_decrypt(NULL, $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key));
+	test('sodium_crypto_aead_chacha20poly1305_decrypt', 2, sodium_crypto_aead_chacha20poly1305_decrypt($data, '', $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key), sodium_crypto_aead_chacha20poly1305_decrypt($data, NULL, $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key));
+	// test('sodium_crypto_aead_chacha20poly1305_decrypt', 3, sodium_crypto_aead_chacha20poly1305_decrypt($data, $aead_chacha20poly1305_ad, '', $aead_chacha20poly1305_key), sodium_crypto_aead_chacha20poly1305_decrypt($data, $aead_chacha20poly1305_ad, NULL, $aead_chacha20poly1305_key)); // must be SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_NPUBBYTES bytes long
+	// test('sodium_crypto_aead_chacha20poly1305_decrypt', 4, sodium_crypto_aead_chacha20poly1305_decrypt($data, $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, ''), sodium_crypto_aead_chacha20poly1305_decrypt($data, $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, NULL)); // must be SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_KEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_aead_chacha20poly1305_decrypt'][] = '3:nonce';
+	$ignore_nullable['sodium_crypto_aead_chacha20poly1305_decrypt'][] = '4:key';
+
+	$aead_chacha20poly1305_key = sodium_crypto_aead_chacha20poly1305_ietf_keygen();
+	$aead_chacha20poly1305_ad = random_bytes(32);
+	$aead_chacha20poly1305_nonce = random_bytes(SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_IETF_NPUBBYTES);
+	test('sodium_crypto_aead_chacha20poly1305_ietf_encrypt', 1, sodium_crypto_aead_chacha20poly1305_ietf_encrypt('', $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key), sodium_crypto_aead_chacha20poly1305_ietf_encrypt(NULL, $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key));
+	test('sodium_crypto_aead_chacha20poly1305_ietf_encrypt', 2, sodium_crypto_aead_chacha20poly1305_ietf_encrypt('a', '', $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key), sodium_crypto_aead_chacha20poly1305_ietf_encrypt('a', NULL, $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key));
+	// test('sodium_crypto_aead_chacha20poly1305_ietf_encrypt', 3, sodium_crypto_aead_chacha20poly1305_ietf_encrypt('a', $aead_chacha20poly1305_ad, '', $aead_chacha20poly1305_key), sodium_crypto_aead_chacha20poly1305_ietf_encrypt('a', $aead_chacha20poly1305_ad, NULL, $aead_chacha20poly1305_key)); // must be SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_IETF_NPUBBYTES bytes long
+	// test('sodium_crypto_aead_chacha20poly1305_ietf_encrypt', 4, sodium_crypto_aead_chacha20poly1305_ietf_encrypt('a', $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, ''), sodium_crypto_aead_chacha20poly1305_ietf_encrypt('a', $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, NULL)); // must be SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_IETF_KEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_aead_chacha20poly1305_ietf_encrypt'][] = '3:nonce';
+	$ignore_nullable['sodium_crypto_aead_chacha20poly1305_ietf_encrypt'][] = '4:key';
+	$data = sodium_crypto_aead_chacha20poly1305_ietf_encrypt('a', $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key);
+	test('sodium_crypto_aead_chacha20poly1305_ietf_decrypt', 1, sodium_crypto_aead_chacha20poly1305_ietf_decrypt('', $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key), sodium_crypto_aead_chacha20poly1305_ietf_decrypt(NULL, $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key));
+	test('sodium_crypto_aead_chacha20poly1305_ietf_decrypt', 2, sodium_crypto_aead_chacha20poly1305_ietf_decrypt($data, '', $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key), sodium_crypto_aead_chacha20poly1305_ietf_decrypt($data, NULL, $aead_chacha20poly1305_nonce, $aead_chacha20poly1305_key));
+	// test('sodium_crypto_aead_chacha20poly1305_ietf_decrypt', 3, sodium_crypto_aead_chacha20poly1305_ietf_decrypt($data, $aead_chacha20poly1305_ad, '', $aead_chacha20poly1305_key), sodium_crypto_aead_chacha20poly1305_ietf_decrypt($data, $aead_chacha20poly1305_ad, NULL, $aead_chacha20poly1305_key)); // must be SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_IETF_NPUBBYTES bytes long
+	// test('sodium_crypto_aead_chacha20poly1305_ietf_decrypt', 4, sodium_crypto_aead_chacha20poly1305_ietf_decrypt($data, $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, ''), sodium_crypto_aead_chacha20poly1305_ietf_decrypt($data, $aead_chacha20poly1305_ad, $aead_chacha20poly1305_nonce, NULL)); // must be SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_IETF_KEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_aead_chacha20poly1305_ietf_decrypt'][] = '3:nonce';
+	$ignore_nullable['sodium_crypto_aead_chacha20poly1305_ietf_decrypt'][] = '4:key';
+
+	$aead_xchacha20poly1305_key = sodium_crypto_aead_xchacha20poly1305_ietf_keygen();
+	$aead_xchacha20poly1305_ad = random_bytes(32);
+	$aead_xchacha20poly1305_nonce = random_bytes(SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES);
+	test('sodium_crypto_aead_xchacha20poly1305_ietf_encrypt', 1, sodium_crypto_aead_xchacha20poly1305_ietf_encrypt('', $aead_xchacha20poly1305_ad, $aead_xchacha20poly1305_nonce, $aead_xchacha20poly1305_key), sodium_crypto_aead_xchacha20poly1305_ietf_encrypt(NULL, $aead_xchacha20poly1305_ad, $aead_xchacha20poly1305_nonce, $aead_xchacha20poly1305_key));
+	test('sodium_crypto_aead_xchacha20poly1305_ietf_encrypt', 2, sodium_crypto_aead_xchacha20poly1305_ietf_encrypt('a', '', $aead_xchacha20poly1305_nonce, $aead_xchacha20poly1305_key), sodium_crypto_aead_xchacha20poly1305_ietf_encrypt('a', NULL, $aead_xchacha20poly1305_nonce, $aead_xchacha20poly1305_key));
+	// test('sodium_crypto_aead_xchacha20poly1305_ietf_encrypt', 3, sodium_crypto_aead_xchacha20poly1305_ietf_encrypt('a', $aead_xchacha20poly1305_ad, '', $aead_xchacha20poly1305_key), sodium_crypto_aead_xchacha20poly1305_ietf_encrypt('a', $aead_xchacha20poly1305_ad, NULL, $aead_xchacha20poly1305_key)); // must be SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES bytes long
+	// test('sodium_crypto_aead_xchacha20poly1305_ietf_encrypt', 4, sodium_crypto_aead_xchacha20poly1305_ietf_encrypt('a', $aead_xchacha20poly1305_ad, $aead_xchacha20poly1305_nonce, ''), sodium_crypto_aead_xchacha20poly1305_ietf_encrypt('a', $aead_xchacha20poly1305_ad, $aead_xchacha20poly1305_nonce, NULL)); // must be SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_KEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_aead_xchacha20poly1305_ietf_encrypt'][] = '3:nonce';
+	$ignore_nullable['sodium_crypto_aead_xchacha20poly1305_ietf_encrypt'][] = '4:key';
+	$data = sodium_crypto_aead_xchacha20poly1305_ietf_encrypt('a', $aead_xchacha20poly1305_ad, $aead_xchacha20poly1305_nonce, $aead_xchacha20poly1305_key);
+	test('sodium_crypto_aead_xchacha20poly1305_ietf_decrypt', 1, sodium_crypto_aead_xchacha20poly1305_ietf_decrypt('', $aead_xchacha20poly1305_ad, $aead_xchacha20poly1305_nonce, $aead_xchacha20poly1305_key), sodium_crypto_aead_xchacha20poly1305_ietf_decrypt(NULL, $aead_xchacha20poly1305_ad, $aead_xchacha20poly1305_nonce, $aead_xchacha20poly1305_key));
+	test('sodium_crypto_aead_xchacha20poly1305_ietf_decrypt', 2, sodium_crypto_aead_xchacha20poly1305_ietf_decrypt($data, '', $aead_xchacha20poly1305_nonce, $aead_xchacha20poly1305_key), sodium_crypto_aead_xchacha20poly1305_ietf_decrypt($data, NULL, $aead_xchacha20poly1305_nonce, $aead_xchacha20poly1305_key));
+	// test('sodium_crypto_aead_xchacha20poly1305_ietf_decrypt', 3, sodium_crypto_aead_xchacha20poly1305_ietf_decrypt($data, $aead_xchacha20poly1305_ad, '', $aead_xchacha20poly1305_key), sodium_crypto_aead_xchacha20poly1305_ietf_decrypt($data, $aead_xchacha20poly1305_ad, NULL, $aead_xchacha20poly1305_key)); // must be SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES bytes long
+	// test('sodium_crypto_aead_xchacha20poly1305_ietf_decrypt', 4, sodium_crypto_aead_xchacha20poly1305_ietf_decrypt($data, $aead_xchacha20poly1305_ad, $aead_xchacha20poly1305_nonce, ''), sodium_crypto_aead_xchacha20poly1305_ietf_decrypt($data, $aead_xchacha20poly1305_ad, $aead_xchacha20poly1305_nonce, NULL)); // must be SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_KEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_aead_xchacha20poly1305_ietf_decrypt'][] = '3:nonce';
+	$ignore_nullable['sodium_crypto_aead_xchacha20poly1305_ietf_decrypt'][] = '4:key';
+
+	$key = sodium_crypto_auth_keygen();
+	test('sodium_crypto_auth', 1, sodium_crypto_auth('', $key), sodium_crypto_auth(NULL, $key));
+	// test('sodium_crypto_auth', 2, sodium_crypto_auth('a', ''), sodium_crypto_auth('a', NULL)); // must be SODIUM_CRYPTO_AUTH_KEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_auth'][] = '2:key';
+	$signature = sodium_crypto_auth('a', $key);
+	// test('sodium_crypto_auth_verify', 1, sodium_crypto_auth_verify('', 'a', $key), sodium_crypto_auth_verify(NULL, 'a', $key)); // must be SODIUM_CRYPTO_AUTH_BYTES bytes long
+	test('sodium_crypto_auth_verify', 2, sodium_crypto_auth_verify($signature, '', $key), sodium_crypto_auth_verify($signature, NULL, $key));
+	// test('sodium_crypto_auth_verify', 3, sodium_crypto_auth_verify($signature, 'a', ''), sodium_crypto_auth_verify($signature, 'a', NULL)); // must be SODIUM_CRYPTO_AUTH_KEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_auth_verify'][] = '1:mac';
+	$ignore_nullable['sodium_crypto_auth_verify'][] = '3:key';
+
+	$sodium_crypto_box_key1 = sodium_crypto_box_keypair();
+	$sodium_crypto_box_key1_public = sodium_crypto_box_publickey($sodium_crypto_box_key1);
+	$sodium_crypto_box_key1_secret = sodium_crypto_box_secretkey($sodium_crypto_box_key1);
+	$sodium_crypto_box_key2 = sodium_crypto_box_keypair();
+	$sodium_crypto_box_key2_public = sodium_crypto_box_publickey($sodium_crypto_box_key2);
+	$sodium_crypto_box_key2_secret = sodium_crypto_box_secretkey($sodium_crypto_box_key2);
+	$sodium_crypto_box_key_a = sodium_crypto_box_keypair_from_secretkey_and_publickey($sodium_crypto_box_key1_secret, $sodium_crypto_box_key2_public);
+	$sodium_crypto_box_key_b = sodium_crypto_box_keypair_from_secretkey_and_publickey($sodium_crypto_box_key2_secret, $sodium_crypto_box_key1_public);
+	$nonce = random_bytes(SODIUM_CRYPTO_BOX_NONCEBYTES);
+	test('sodium_crypto_box', 1, sodium_crypto_box('', $nonce, $sodium_crypto_box_key_a), sodium_crypto_box(NULL, $nonce, $sodium_crypto_box_key_a));
+	// test('sodium_crypto_box', 2, sodium_crypto_box('a', '', $sodium_crypto_box_key_a), sodium_crypto_box('a', NULL, $sodium_crypto_box_key_a)); // must be SODIUM_CRYPTO_BOX_NONCEBYTES bytes long
+	// test('sodium_crypto_box', 3, sodium_crypto_box('', $nonce, ''), sodium_crypto_box(NULL, $nonce, NULL)); // must be SODIUM_CRYPTO_BOX_KEYPAIRBYTES bytes long
+	$ignore_nullable['sodium_crypto_box'][] = '2:nonce';
+	$ignore_nullable['sodium_crypto_box'][] = '3:key_pair';
+	// $seed = sodium_crypto_pwhash()
+	// test('sodium_crypto_box_seed_keypair', 1, sodium_crypto_box_seed_keypair(''), sodium_crypto_box(NULL)); // must be SODIUM_CRYPTO_BOX_SEEDBYTES bytes long
+	// test('sodium_crypto_box_keypair_from_secretkey_and_publickey', 1, sodium_crypto_box_keypair_from_secretkey_and_publickey('', $sodium_crypto_box_key2_public), sodium_crypto_box_keypair_from_secretkey_and_publickey(NULL, $sodium_crypto_box_key2_public)); // must be SODIUM_CRYPTO_BOX_SECRETKEYBYTES bytes long
+	// test('sodium_crypto_box_keypair_from_secretkey_and_publickey', 2, sodium_crypto_box_keypair_from_secretkey_and_publickey($sodium_crypto_box_key1_secret, ''), sodium_crypto_box_keypair_from_secretkey_and_publickey($sodium_crypto_box_key1_secret, NULL)); // must be SODIUM_CRYPTO_BOX_PUBLICKEYBYTES bytes long
+	$encrypted = sodium_crypto_box('a', $nonce, $sodium_crypto_box_key_a);
+	test('sodium_crypto_box_open', 1, sodium_crypto_box_open('', $nonce, $sodium_crypto_box_key_b), sodium_crypto_box_open(NULL, $nonce, $sodium_crypto_box_key_b));
+	// test('sodium_crypto_box_open', 2, sodium_crypto_box_open($encrypted, '', $sodium_crypto_box_key_b), sodium_crypto_box_open($encrypted, NULL, $sodium_crypto_box_key_b)); // must be SODIUM_CRYPTO_BOX_NONCEBYTES bytes long
+	// test('sodium_crypto_box_open', 3, sodium_crypto_box_open($encrypted, $nonce, ''), sodium_crypto_box_open($encrypted, $nonce, NULL)); // must be SODIUM_CRYPTO_BOX_KEYPAIRBYTES bytes long
+	$ignore_nullable['sodium_crypto_box_open'][] = '2:nonce';
+	$ignore_nullable['sodium_crypto_box_open'][] = '3:key_pair';
+	$a = sodium_crypto_box_seal('', $sodium_crypto_box_key1_public); $b = sodium_crypto_box_seal(NULL, $sodium_crypto_box_key1_public); test('sodium_crypto_box_seal', 1, '', ''); // Do not check output values, as nonce changes
+	// test('sodium_crypto_box_seal', 1, sodium_crypto_box_seal('a', ''), sodium_crypto_box_seal('a', NULL)); // must be SODIUM_CRYPTO_BOX_PUBLICKEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_box_seal'][] = '2:public_key';
+	$encrypted = sodium_crypto_box_seal('a', $sodium_crypto_box_key1_public);
+	test('sodium_crypto_box_seal_open', 1, sodium_crypto_box_seal_open('', $sodium_crypto_box_key1), sodium_crypto_box_seal_open(NULL, $sodium_crypto_box_key1));
+	// test('sodium_crypto_box_seal_open', 2, sodium_crypto_box_seal_open($encrypted, ''), sodium_crypto_box_seal_open($encrypted, NULL)); // must be SODIUM_CRYPTO_BOX_KEYPAIRBYTES bytes long
+	$ignore_nullable['sodium_crypto_box_seal_open'][] = '2:key_pair';
+
+	test('sodium_crypto_generichash', 1, sodium_crypto_generichash(''), sodium_crypto_generichash(NULL));
+	test('sodium_crypto_generichash', 2, sodium_crypto_generichash('a', ''), sodium_crypto_generichash('a', NULL));
+	$gh = sodium_crypto_generichash_init();
+	// $b = '';
+	// $n = NULL;
+	// test('sodium_crypto_generichash_update', 1, sodium_crypto_generichash_update($b, 'a'), sodium_crypto_generichash_update($n, 'a')); // cannot be passed by reference... and incorrect state length
+	test('sodium_crypto_generichash_update', 2, sodium_crypto_generichash_update($gh, ''), sodium_crypto_generichash_update($gh, NULL));
+	$ignore_nullable['sodium_crypto_generichash_update'][] = '1:state';
+	$salt = random_bytes(SODIUM_CRYPTO_PWHASH_SALTBYTES);
+	// test('sodium_crypto_pwhash', 1, sodium_crypto_pwhash(SODIUM_CRYPTO_BOX_SEEDBYTES, '', $salt, SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_ALG_DEFAULT), sodium_crypto_pwhash(SODIUM_CRYPTO_BOX_SEEDBYTES, NULL, $salt, SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_ALG_DEFAULT)); // empty password
+	// test('sodium_crypto_pwhash', 2, sodium_crypto_pwhash(SODIUM_CRYPTO_BOX_SEEDBYTES, 'a', '', SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_ALG_DEFAULT), sodium_crypto_pwhash(SODIUM_CRYPTO_BOX_SEEDBYTES, 'a', NULL, SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_ALG_DEFAULT)); // must be SODIUM_CRYPTO_PWHASH_SALTBYTES bytes long
+	// test('sodium_crypto_pwhash_str', 1, sodium_crypto_pwhash_str('', SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE), sodium_crypto_pwhash_str(NULL, SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE)); // empty password
+	$pw = sodium_crypto_pwhash_str('a', SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE);
+	// test('sodium_crypto_pwhash_str_verify', 1, sodium_crypto_pwhash_str_verify($pw, ''), sodium_crypto_pwhash_str_verify($pw, NULL)); // empty password
+	test('sodium_crypto_pwhash_str_needs_rehash', 1, sodium_crypto_pwhash_str_needs_rehash('', SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE), sodium_crypto_pwhash_str_needs_rehash(NULL, SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE)); // empty password
+
+	$salt = random_bytes(SODIUM_CRYPTO_PWHASH_SALTBYTES);
+	// test('sodium_crypto_pwhash_scryptsalsa208sha256', 1, sodium_crypto_pwhash_scryptsalsa208sha256(SODIUM_CRYPTO_BOX_SEEDBYTES, '', $salt, SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_OPSLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_MEMLIMIT_INTERACTIVE), sodium_crypto_pwhash_scryptsalsa208sha256(SODIUM_CRYPTO_BOX_SEEDBYTES, NULL, $salt, SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_OPSLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_MEMLIMIT_INTERACTIVE)); // empty password
+	// test('sodium_crypto_pwhash_scryptsalsa208sha256', 2, sodium_crypto_pwhash_scryptsalsa208sha256(SODIUM_CRYPTO_BOX_SEEDBYTES, 'a', '', SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_OPSLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_MEMLIMIT_INTERACTIVE), sodium_crypto_pwhash_scryptsalsa208sha256(SODIUM_CRYPTO_BOX_SEEDBYTES, 'a', NULL, SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_OPSLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_MEMLIMIT_INTERACTIVE)); // must be SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_SALTBYTES bytes long
+	// test('sodium_crypto_pwhash_scryptsalsa208sha256_str', 1, sodium_crypto_pwhash_scryptsalsa208sha256_str('', SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_OPSLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_MEMLIMIT_INTERACTIVE), sodium_crypto_pwhash_scryptsalsa208sha256_str(NULL, SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_OPSLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_MEMLIMIT_INTERACTIVE)); // empty password
+	$pw = sodium_crypto_pwhash_scryptsalsa208sha256_str('a', SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_OPSLIMIT_INTERACTIVE, SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_MEMLIMIT_INTERACTIVE);
+	// test('sodium_crypto_pwhash_scryptsalsa208sha256_str_verify', 1, sodium_crypto_pwhash_scryptsalsa208sha256_str_verify($pw, ''), sodium_crypto_pwhash_scryptsalsa208sha256_str_verify($pw, NULL)); // empty password
+
+	$key = sodium_crypto_secretbox_keygen();
+	$nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+	test('sodium_crypto_secretbox', 1, sodium_crypto_secretbox('', $nonce, $key), sodium_crypto_secretbox(NULL, $nonce, $key));
+	// test('sodium_crypto_secretbox', 2, sodium_crypto_secretbox('a', '', $key), sodium_crypto_secretbox('a', NULL, $key)); // must be SODIUM_CRYPTO_SECRETBOX_NONCEBYTES bytes long
+	// test('sodium_crypto_secretbox', 3, sodium_crypto_secretbox('a', $nonce, ''), sodium_crypto_secretbox('a', $nonce, NULL)); // must be SODIUM_CRYPTO_SECRETBOX_KEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_secretbox'][] = '2:nonce';
+	$ignore_nullable['sodium_crypto_secretbox'][] = '3:key';
+	$encrypted = sodium_crypto_secretbox('a', $nonce, $key);
+	test('sodium_crypto_secretbox_open', 1, sodium_crypto_secretbox_open('', $nonce, $key), sodium_crypto_secretbox_open(NULL, $nonce, $key));
+	// test('sodium_crypto_secretbox_open', 2, sodium_crypto_secretbox_open($encrypted, '', $key), sodium_crypto_secretbox_open($encrypted, NULL, $key)); // must be SODIUM_CRYPTO_SECRETBOX_NONCEBYTES bytes long
+	// test('sodium_crypto_secretbox_open', 3, sodium_crypto_secretbox_open($encrypted, $nonce, ''), sodium_crypto_secretbox_open($encrypted, $nonce, NULL)); // must be SODIUM_CRYPTO_SECRETBOX_KEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_secretbox_open'][] = '2:nonce';
+	$ignore_nullable['sodium_crypto_secretbox_open'][] = '3:key';
+
+	$k = sodium_crypto_secretstream_xchacha20poly1305_keygen();
+	list($state, $header) = sodium_crypto_secretstream_xchacha20poly1305_init_push($k);
+	// $b = '';
+	// $n = NULL;
+	// $a = sodium_crypto_secretstream_xchacha20poly1305_push($b, 'a', 'a'); $b = sodium_crypto_secretstream_xchacha20poly1305_push($n, 'a', 'a'); test('sodium_crypto_secretstream_xchacha20poly1305_push', 1, '', ''); // cannot be passed by reference... and incorrect state length
+	$a = sodium_crypto_secretstream_xchacha20poly1305_push($state, '', 'a'); $b = sodium_crypto_secretstream_xchacha20poly1305_push($state, NULL, 'a'); test('sodium_crypto_secretstream_xchacha20poly1305_push', 2, '', ''); // Do not check output values, as state changes
+	$a = sodium_crypto_secretstream_xchacha20poly1305_push($state, 'a', ''); $b = sodium_crypto_secretstream_xchacha20poly1305_push($state, 'a', NULL); test('sodium_crypto_secretstream_xchacha20poly1305_push', 3, '', ''); // Do not check output values, as state changes
+	$ignore_nullable['sodium_crypto_secretstream_xchacha20poly1305_push'][] = '1:state';
+	list($state, $header) = sodium_crypto_secretstream_xchacha20poly1305_init_push($k);
+	$e = sodium_crypto_secretstream_xchacha20poly1305_push($state, 'a', 'x');
+	$pull_state = sodium_crypto_secretstream_xchacha20poly1305_init_pull($header, $k);
+	// $b = '';
+	// $n = NULL;
+	// $a = sodium_crypto_secretstream_xchacha20poly1305_pull($b, $e, 'x'); $b = sodium_crypto_secretstream_xchacha20poly1305_pull($n, $e, 'x'); test('sodium_crypto_secretstream_xchacha20poly1305_pull', 1, '', ''); // cannot be passed by reference... and incorrect state length
+	$a = sodium_crypto_secretstream_xchacha20poly1305_pull($pull_state, '', 'x'); $b = sodium_crypto_secretstream_xchacha20poly1305_pull($pull_state, NULL, 'x'); test('sodium_crypto_secretstream_xchacha20poly1305_pull', 2, '', ''); // Do not check output values, as state changes
+	$a = sodium_crypto_secretstream_xchacha20poly1305_pull($pull_state, $e, ''); $b = sodium_crypto_secretstream_xchacha20poly1305_pull($pull_state, $e, NULL); test('sodium_crypto_secretstream_xchacha20poly1305_pull', 3, '', ''); // Do not check output values, as state changes
+	$ignore_nullable['sodium_crypto_secretstream_xchacha20poly1305_pull'][] = '1:state';
+
+	$key = random_bytes(SODIUM_CRYPTO_SHORTHASH_KEYBYTES);
+	test('sodium_crypto_shorthash', 1, sodium_crypto_shorthash('', $key), sodium_crypto_shorthash(NULL, $key));
+	// test('sodium_crypto_shorthash', 1, sodium_crypto_shorthash('a', ''), sodium_crypto_shorthash('a', NULL)); // must be SODIUM_CRYPTO_SHORTHASH_KEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_shorthash'][] = '2:key';
+
+	$key_pair = sodium_crypto_sign_keypair();
+	$key_secret = sodium_crypto_sign_secretkey($key_pair);
+	$key_public = sodium_crypto_sign_publickey($key_pair);
+	test('sodium_crypto_sign', 1, sodium_crypto_sign('', $key_secret), sodium_crypto_sign(NULL, $key_secret));
+	// test('sodium_crypto_sign', 2, sodium_crypto_sign('a', ''), sodium_crypto_sign('a', NULL)); // must be SODIUM_CRYPTO_SIGN_SECRETKEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_sign'][] = '2:secret_key';
+	test('sodium_crypto_sign_detached', 1, sodium_crypto_sign_detached('', $key_secret), sodium_crypto_sign_detached(NULL, $key_secret));
+	// test('sodium_crypto_sign_detached', 2, sodium_crypto_sign_detached('a', ''), sodium_crypto_sign_detached('a', NULL)); // must be SODIUM_CRYPTO_SIGN_SECRETKEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_sign_detached'][] = '2:secret_key';
+	$encrypted = sodium_crypto_sign('a', $key_secret);
+	test('sodium_crypto_sign_open', 1, sodium_crypto_sign_open('', $key_public), sodium_crypto_sign_open(NULL, $key_public));
+	// test('sodium_crypto_sign_open', 2, sodium_crypto_sign_open($encrypted, ''), sodium_crypto_sign_open($encrypted, NULL)); // must be SODIUM_CRYPTO_SIGN_PUBLICKEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_sign_open'][] = '2:public_key';
+	$message = 'a';
+	$signature = sodium_crypto_sign_detached($message, $key_secret);
+	// test('sodium_crypto_sign_verify_detached', 1, sodium_crypto_sign_verify_detached('', $message, $key_public), sodium_crypto_sign_verify_detached(NULL, $message, $key_public)); // must be SODIUM_CRYPTO_SIGN_BYTES bytes long
+	test('sodium_crypto_sign_verify_detached', 2, sodium_crypto_sign_verify_detached($signature, '', $key_public), sodium_crypto_sign_verify_detached($signature, NULL, $key_public));
+	// test('sodium_crypto_sign_verify_detached', 3, sodium_crypto_sign_verify_detached($signature, $message, ''), sodium_crypto_sign_verify_detached($signature, $message, NULL)); // must be SODIUM_CRYPTO_SIGN_PUBLICKEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_sign_verify_detached'][] = '1:signature';
+	$ignore_nullable['sodium_crypto_sign_verify_detached'][] = '3:public_key';
+
+	$message = 'hello';
+	$nonce = random_bytes(SODIUM_CRYPTO_STREAM_NONCEBYTES);
+	$key = sodium_crypto_stream_keygen();
+	$stream = sodium_crypto_stream(strlen($message), $nonce, $key);
+	test('sodium_crypto_stream_xor', 1, sodium_crypto_stream_xor('', $nonce, $key), sodium_crypto_stream_xor(NULL, $nonce, $key));
+	// test('sodium_crypto_stream_xor', 2, sodium_crypto_stream_xor($message, '', $key), sodium_crypto_stream_xor($message, NULL, $key)); // must be SODIUM_CRYPTO_STREAM_NONCEBYTES bytes long
+	// test('sodium_crypto_stream_xor', 3, sodium_crypto_stream_xor($message, $nonce, ''), sodium_crypto_stream_xor($message, $nonce, NULL)); // must be SODIUM_CRYPTO_STREAM_KEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_stream_xor'][] = '2:nonce';
+	$ignore_nullable['sodium_crypto_stream_xor'][] = '3:key';
+
+	$message = 'hello';
+	$nonce = random_bytes(SODIUM_CRYPTO_STREAM_XCHACHA20_NONCEBYTES);
+	$key = sodium_crypto_stream_xchacha20_keygen();
+	$stream = sodium_crypto_stream_xchacha20(strlen($message), $nonce, $key);
+	test('sodium_crypto_stream_xchacha20_xor', 1, sodium_crypto_stream_xchacha20_xor('', $nonce, $key), sodium_crypto_stream_xchacha20_xor(NULL, $nonce, $key));
+	// test('sodium_crypto_stream_xchacha20_xor', 2, sodium_crypto_stream_xchacha20_xor($message, '', $key), sodium_crypto_stream_xchacha20_xor($message, NULL, $key)); // must be SODIUM_CRYPTO_STREAM_XCHACHA20_NONCEBYTES bytes long
+	// test('sodium_crypto_stream_xchacha20_xor', 3, sodium_crypto_stream_xchacha20_xor($message, $nonce, ''), sodium_crypto_stream_xchacha20_xor($message, $nonce, NULL)); // must be SODIUM_CRYPTO_STREAM_XCHACHA20_KEYBYTES bytes long
+	$ignore_nullable['sodium_crypto_stream_xchacha20_xor'][] = '2:nonce';
+	$ignore_nullable['sodium_crypto_stream_xchacha20_xor'][] = '3:key';
+
+
+
+
+
 
 //--------------------------------------------------
 // Check functions from functions-change.md

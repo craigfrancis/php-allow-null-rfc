@@ -26,7 +26,7 @@ $name = $this->request->getQuery('name'); // CakePHP
 $name = $request->getGet('name'); // CodeIgniter
 ```
 
-And `NULL` can be returned from many functions, e.g.
+And `NULL` can be returned from functions, e.g.
 
 * `array_pop()`
 * `filter_input()`
@@ -34,7 +34,7 @@ And `NULL` can be returned from many functions, e.g.
 * `error_get_last()`
 * `json_decode()`
 
-Which makes it common for developers to pass potential `NULL` values to these internal functions, e.g.
+Which makes it common for `NULL` to be passed to internal functions, e.g.
 
 ```php
 trim($name);
@@ -49,21 +49,21 @@ socket_write($socket, $name);
 xmlwriter_text($writer, $name);
 ```
 
-And sometimes a developer may explicitly use `NULL` to skip certain parameters, e.g. `$additional_headers` in `mail()`.
+This includes developers explicitly using `NULL` to skip certain parameters, e.g. `$additional_headers` in `mail()`.
 
 Currently this affects those using PHP 8.1 with `E_DEPRECATED`, but it implies everyone will need to modify their code in the future.
 
-It also applies even if they are not using `strict_types=1`.
+It also applies even if the developer is not using `strict_types=1`.
 
-And while the individual modifications are easy, there are many of them, they are difficult to find, and often pointless (e.g. `urlencode(strval($name))`).
+And while the individual changes are easy - there are many of them, they are difficult to find, and often pointless (e.g. `urlencode(strval($name))`).
 
-Without the changes listed below, developers will need to either use these deprecation warnings, or use strict Static Analysis (one that can determine when a variable can be `NULL`; e.g. Psalm at [level 3](https://psalm.dev/docs/running_psalm/error_levels/), with no baseline).
+Without the changes listed below, developers will need to either - use these deprecation warnings, or use strict Static Analysis (one that can determine when a variable can be `NULL`; e.g. Psalm at [level 3](https://psalm.dev/docs/running_psalm/error_levels/), with no baseline).
 
 ## Proposal
 
 Update **some** internal function parameters to accept NULL, to reduce the burden for developers upgrading.
 
-While this is in Draft, the [list of functions is hosted on GitHub](https://github.com/craigfrancis/php-allow-null-rfc/blob/main/functions-change.md) (pull requests welcome):
+While this is in Draft, the [list of functions are hosted on GitHub](https://github.com/craigfrancis/php-allow-null-rfc/blob/main/functions-change.md) (suggestions and pull requests welcome).
 
 ## Decision Process
 
@@ -75,7 +75,7 @@ Does the parameter work with `NULL`, in the same way that it would if an empty s
 - `substr_count()` requires a non-empty string `$needle` (continue to deprecate `NULL`).
 - `mb_convert_encoding()` requires a valid encoding for `$to_encoding` (continue to deprecate `NULL`).
 
-You could argue some function parameters should not accept an empty string (e.g. `strrpos()` accepting an empty string for `$needle`), but those should be addressed in a different RFC, involving a discussion on backwards compatibility for every change.
+You could argue some function parameters should not accept an empty string (e.g. `strrpos()` accepting an empty string for `$needle`), but those should be addressed in a future RFC, involving a discussion on any backwards compatibility issues for every change (there is no point complaining about `NULL` now, and then going though this process again if the developer simply uses `strval()` to get an empty string).
 
 One set of candidates that could be removed are functions like `sodium_crypto_box_open()` where a blank `$ciphertext` will always return `false` (for failure).
 
@@ -103,11 +103,11 @@ None known
 
 ## Open Issues
 
-TODO
+Is the [list of functions](https://github.com/craigfrancis/php-allow-null-rfc/blob/main/functions-change.md) complete?
 
 ## Future Scope
 
-None
+Some functions parameters could be updated to complain when an Empty String or NULL is provided.
 
 ## Voting
 
@@ -117,7 +117,7 @@ TODO
 
 ## Patches and Tests
 
-TODO
+To get and **Test** the list of functions, I wrote a script to `get_defined_functions()`, then used `ReflectionFunction()` to identify parameters that accepted the 'string' type, and not `->allowsNull()`. This resulted in the [list of functions to change](https://github.com/craigfrancis/php-allow-null-rfc/blob/main/functions-change.md), where I manually removed the [functions that shouldn't be changed](https://github.com/craigfrancis/php-allow-null-rfc/blob/main/functions-other.md), and updated the script to test every argument (to see that it complained with `NULL`, and the output remained the same) - [Source](https://github.com/craigfrancis/php-allow-null-rfc/blob/main/functions.php).
 
 ## Implementation
 

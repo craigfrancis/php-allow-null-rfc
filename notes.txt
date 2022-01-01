@@ -13,3 +13,6 @@ pattern:string... why can some be an empty string?
 Can this be done by changing `Z_PARAM_STR()` to `Z_PARAM_STR_OR_NULL()`... e.g html_entity_decode()
 
 
+
+hash_pbkdf2('sha256', 'a', '', 1000) ... // Oddity, should an empty key be allowed?
+

@@ -22,8 +22,6 @@ Only change parameters which are in **bold**.
 - `htmlspecialchars_decode`(**string:string**, flags:int)
 - `html_entity_decode`(**string:string**, flags:int, encoding:string)
 - `htmlentities`(**string:string**, flags:int, encoding:string, double_encode:bool)
-- `json_decode`(**json:string**, associative:bool, depth:int, flags:int)
-- `session_decode`(**data:string**)
 - `addslashes`(**string:string**)
 - `addcslashes`(**string:string**, **characters:string**)
 - `stripslashes`(**string:string**)
@@ -31,7 +29,6 @@ Only change parameters which are in **bold**.
 - `quotemeta`(**string:string**)
 - `quoted_printable_decode`(**string:string**)
 - `quoted_printable_encode`(**string:string**)
-- `escapeshellcmd`(**command:string**)
 - `escapeshellarg`(**arg:string**)
 - `curl_escape`(handle:CurlHandle, **string:string**)
 - `curl_unescape`(handle:CurlHandle, **string:string**)
@@ -44,9 +41,8 @@ Only change parameters which are in **bold**.
 - `gzputs`(_stream:?_, **data:string**, length:int)
 - `deflate_add`(context:DeflateContext, **data:string**, flush_mode:int)
 - `inflate_add`(context:InflateContext, **data:string**, flush_mode:int)
-- `pack`(**format:string**, values:mixed)
-- `unpack`(**format:string**, **string:string**, offset:int)
-- `iconv_mime_encode`(**field_name:string**, **field_value:string**, options:array)
+- `unpack`(format:string, **string:string**, offset:int)
+- `iconv_mime_encode`(field_name:string, **field_value:string**, options:array)
 - `iconv_mime_decode`(**string:string**, mode:int, encoding:string)
 - `iconv`(**from_encoding:string**, **to_encoding:string**, **string:string**)
 - `sodium_bin2hex`(**string:string**)
@@ -55,7 +51,7 @@ Only change parameters which are in **bold**.
 - `sodium_base642bin`(**string:string**, id:int, **ignore:string**)
 - `mb_convert_encoding`(**string:array|string**, to_encoding:string, from_encoding:array|string|null)
 - `mb_detect_encoding`(**string:string**, encodings:array|string|null, strict:bool)
-- `mb_encode_mimeheader`(**string:string**, charset:string, transfer_encoding:string, **newline:string**, indent:int)
+- `mb_encode_mimeheader`(**string:string**, charset:string, transfer_encoding:string, newline:string, indent:int)
 - `mb_decode_mimeheader`(**string:string**)
 - `mb_encode_numericentity`(**string:string**, map:array, encoding:string, hex:bool)
 - `mb_decode_numericentity`(**string:string**, map:array, encoding:string)
@@ -66,7 +62,6 @@ Only change parameters which are in **bold**.
 - `pg_escape_bytea`(_connection:?_, **string:string**)
 - `pg_unescape_bytea`(**string:string**)
 - `pg_escape_literal`(_connection:?_, **string:string**)
-- `pg_escape_identifier`(_connection:?_, **string:string**)
 - `pg_copy_to`(connection:PgSql\Connection, table_name:string, separator:string, **null_as:string**)
 - `pg_copy_from`(connection:PgSql\Connection, table_name:string, rows:array, separator:string, **null_as:string**)
 
@@ -76,24 +71,22 @@ Only change parameters which are in **bold**.
 - `strtolower`(**string:string**)
 - `ucfirst`(**string:string**)
 - `lcfirst`(**string:string**)
-- `ucwords`(**string:string**, **separators:string**)
-- `trim`(**string:string**, **characters:string**)
-- `ltrim`(**string:string**, **characters:string**)
-- `rtrim`(**string:string**, **characters:string**)
-- `chop`(**string:string**, **characters:string**)
+- `ucwords`(**string:string**, separators:string)
+- `trim`(**string:string**, characters:string)
+- `ltrim`(**string:string**, characters:string)
+- `rtrim`(**string:string**, characters:string)
+- `chop`(**string:string**, characters:string)
 - `str_rot13`(**string:string**)
 - `str_shuffle`(**string:string**)
 - `substr`(**string:string**, offset:int, length:int)
 - `substr_replace`(**string:array|string**, **replace:array|string**, offset:array|int, length:array|int|null)
 - `substr_count`(**haystack:string**, needle:string, offset:int, length:int)
 - `explode`(separator:string, **string:string**, limit:int)
-- `implode`(**separator:array|string**, array:array)
-- `join`(**separator:array|string**, array:array)
 - `strcoll`(**string1:string**, **string2:string**)
 - `str_split`(**string:string**, length:int)
-- `chunk_split`(**string:string**, length:int, **separator:string**)
+- `chunk_split`(**string:string**, length:int, separator:string)
 - `wordwrap`(**string:string**, width:int, break:string, cut_long_words:bool)
-- `strtr`(**string:string**, **from:array|string**, to:string)
+- `strtr`(**string:string**, from:array|string, to:string)
 - `strrev`(**string:string**)
 - `str_replace`(**search:array|string**, **replace:array|string**, **subject:array|string**, _count:?_)
 - `str_ireplace`(**search:array|string**, **replace:array|string**, **subject:array|string**, _count:?_)
@@ -118,20 +111,20 @@ Only change parameters which are in **bold**.
 
 ## String Position
 
-- `strpos`(**haystack:string**, **needle:string**, offset:int)
-- `strrpos`(**haystack:string**, **needle:string**, offset:int)
-- `stripos`(**haystack:string**, **needle:string**, offset:int)
-- `strripos`(**haystack:string**, **needle:string**, offset:int)
-- `iconv_strpos`(**haystack:string**, **needle:string**, offset:int, encoding:string)
-- `iconv_strrpos`(**haystack:string**, **needle:string**, encoding:string)
-- `mb_strpos`(**haystack:string**, **needle:string**, offset:int, encoding:string)
-- `mb_strrpos`(**haystack:string**, **needle:string**, offset:int, encoding:string)
-- `mb_stripos`(**haystack:string**, **needle:string**, offset:int, encoding:string)
-- `mb_strripos`(**haystack:string**, **needle:string**, offset:int, encoding:string)
-- `grapheme_strpos`(**haystack:string**, **needle:string**, offset:int)
-- `grapheme_strrpos`(**haystack:string**, **needle:string**, offset:int)
-- `grapheme_stripos`(**haystack:string**, **needle:string**, offset:int)
-- `grapheme_strripos`(**haystack:string**, **needle:string**, offset:int)
+- `strpos`(**haystack:string**, needle:string, offset:int)
+- `strrpos`(**haystack:string**, needle:string, offset:int)
+- `stripos`(**haystack:string**, needle:string, offset:int)
+- `strripos`(**haystack:string**, needle:string, offset:int)
+- `iconv_strpos`(**haystack:string**, needle:string, offset:int, encoding:string)
+- `iconv_strrpos`(**haystack:string**, needle:string, encoding:string)
+- `mb_strpos`(**haystack:string**, needle:string, offset:int, encoding:string)
+- `mb_strrpos`(**haystack:string**, needle:string, offset:int, encoding:string)
+- `mb_stripos`(**haystack:string**, needle:string, offset:int, encoding:string)
+- `mb_strripos`(**haystack:string**, needle:string, offset:int, encoding:string)
+- `grapheme_strpos`(**haystack:string**, needle:string, offset:int)
+- `grapheme_strrpos`(**haystack:string**, needle:string, offset:int)
+- `grapheme_stripos`(**haystack:string**, needle:string, offset:int)
+- `grapheme_strripos`(**haystack:string**, needle:string, offset:int)
 
 ## String Comparison
 
@@ -141,11 +134,10 @@ Only change parameters which are in **bold**.
 - `strncasecmp`(**string1:string**, **string2:string**, length:int)
 - `strnatcmp`(**string1:string**, **string2:string**)
 - `strnatcasecmp`(**string1:string**, **string2:string**)
-- `substr_compare`(**haystack:string**, **needle:string**, offset:int, length:int, case_insensitive:bool)
-- `str_contains`(**haystack:string**, **needle:string**)
-- `str_starts_with`(**haystack:string**, **needle:string**)
-- `str_ends_with`(**haystack:string**, **needle:string**)
-- `version_compare`(**version1:string**, **version2:string**, operator:string)
+- `substr_compare`(**haystack:string**, needle:string, offset:int, length:int, case_insensitive:bool)
+- `str_contains`(**haystack:string**, needle:string)
+- `str_starts_with`(**haystack:string**, needle:string)
+- `str_ends_with`(**haystack:string**, needle:string)
 - `collator_compare`(object:Collator, **string1:string**, **string2:string**)
 - `collator_get_sort_key`(object:Collator, **string:string**)
 - `metaphone`(**string:string**, max_phonemes:int)
@@ -158,29 +150,28 @@ Only change parameters which are in **bold**.
 ## String Details
 
 - `strlen`(**string:string**)
-- `strstr`(**haystack:string**, **needle:string**, before_needle:bool)
-- `strchr`(**haystack:string**, **needle:string**, before_needle:bool)
-- `stristr`(**haystack:string**, **needle:string**, before_needle:bool)
-- `strrchr`(**haystack:string**, **needle:string**)
+- `strstr`(**haystack:string**, needle:string, before_needle:bool)
+- `strchr`(**haystack:string**, needle:string, before_needle:bool)
+- `stristr`(**haystack:string**, needle:string, before_needle:bool)
+- `strrchr`(**haystack:string**, needle:string)
 - `strpbrk`(**string:string**, characters:string)
-- `strspn`(**string:string**, **characters:string**, offset:int, length:int)
-- `strcspn`(**string:string**, **characters:string**, offset:int, length:int)
+- `strspn`(**string:string**, characters:string, offset:int, length:int)
+- `strcspn`(**string:string**, characters:string, offset:int, length:int)
 - `strtok`(**string:string**, token:string)
 - `str_word_count`(**string:string**, format:int, characters:string)
 - `count_chars`(**string:string**, mode:int)
-- `ord`(**character:string**)
 - `iconv_strlen`(**string:string**, encoding:string)
 - `mb_strlen`(**string:string**, encoding:string)
-- `mb_strstr`(**haystack:string**, **needle:string**, before_needle:bool, encoding:string)
-- `mb_strrchr`(**haystack:string**, **needle:string**, before_needle:bool, encoding:string)
-- `mb_stristr`(**haystack:string**, **needle:string**, before_needle:bool, encoding:string)
-- `mb_strrichr`(**haystack:string**, **needle:string**, before_needle:bool, encoding:string)
+- `mb_strstr`(**haystack:string**, needle:string, before_needle:bool, encoding:string)
+- `mb_strrchr`(**haystack:string**, needle:string, before_needle:bool, encoding:string)
+- `mb_stristr`(**haystack:string**, needle:string, before_needle:bool, encoding:string)
+- `mb_strrichr`(**haystack:string**, needle:string, before_needle:bool, encoding:string)
 - `mb_strcut`(**string:string**, start:int, length:int, encoding:string)
 - `mb_strwidth`(**string:string**, encoding:string)
 - `mb_strimwidth`(**string:string**, start:int, width:int, **trim_marker:string**, encoding:string)
 - `grapheme_strlen`(**string:string**)
-- `grapheme_strstr`(**haystack:string**, **needle:string**, beforeNeedle:bool)
-- `grapheme_stristr`(**haystack:string**, **needle:string**, beforeNeedle:bool)
+- `grapheme_strstr`(**haystack:string**, needle:string, beforeNeedle:bool)
+- `grapheme_stristr`(**haystack:string**, needle:string, beforeNeedle:bool)
 
 ## RegEx
 
@@ -194,10 +185,10 @@ Only change parameters which are in **bold**.
 - `preg_quote`(**str:string**, delimiter:string)
 - `mb_ereg`(pattern:string, **string:string**, _matches:?_)
 - `mb_eregi`(pattern:string, **string:string**, _matches:?_)
-- `mb_ereg_replace`(**pattern:string**, **replacement:string**, **string:string**, options:string)
-- `mb_eregi_replace`(**pattern:string**, **replacement:string**, **string:string**, options:string)
-- `mb_ereg_replace_callback`(**pattern:string**, callback:callable, **string:string**, options:string)
-- `mb_ereg_match`(**pattern:string**, **string:string**, options:string)
+- `mb_ereg_replace`(pattern:string, **replacement:string**, **string:string**, options:string)
+- `mb_eregi_replace`(pattern:string, **replacement:string**, **string:string**, options:string)
+- `mb_ereg_replace_callback`(pattern:string, callback:callable, **string:string**, options:string)
+- `mb_ereg_match`(pattern:string, **string:string**, options:string)
 - `mb_ereg_search_init`(**string:string**, pattern:string, options:string)
 
 ## Normalising
@@ -209,17 +200,17 @@ Only change parameters which are in **bold**.
 ## Hashing
 
 - `hash`(algo:string, **data:string**, binary:bool, options:array)
-- `hash_hmac`(algo:string, **data:string**, **key:string**, binary:bool)
+- `hash_hmac`(algo:string, **data:string**, key:string, binary:bool)
 - `hash_update`(context:HashContext, **data:string**)
-- `hash_pbkdf2`(algo:string, **password:string**, **salt:string**, iterations:int, length:int, binary:bool)
+- `hash_pbkdf2`(algo:string, **password:string**, salt:string, iterations:int, length:int, binary:bool)
 - `crc32`(**string:string**)
 - `md5`(**string:string**, binary:bool)
 - `sha1`(**string:string**, binary:bool)
-- `crypt`(**string:string**, **salt:string**)
+- `crypt`(**string:string**, salt:string)
 
 ## Files
 
-- `basename`(**path:string**, **suffix:string**)
+- `basename`(**path:string**, suffix:string)
 - `dirname`(**path:string**, levels:int)
 - `pathinfo`(**path:string**, flags:int)
 - `fwrite`(_stream:?_, **data:string**, length:int)
@@ -229,7 +220,7 @@ Only change parameters which are in **bold**.
 
 - `setcookie`(name:string, **value:string**, expires_or_options:array|int, **path:string**, **domain:string**, secure:bool, httponly:bool)
 - `setrawcookie`(name:string, **value:string**, expires_or_options:array|int, **path:string**, **domain:string**, secure:bool, httponly:bool)
-- `output_add_rewrite_var`(**name:string**, **value:string**)
+- `output_add_rewrite_var`(name:string, **value:string**)
 
 ## Parsing
 
@@ -238,28 +229,16 @@ Only change parameters which are in **bold**.
 - `mb_parse_str`(**string:string**, _result:?_)
 - `numfmt_parse`(formatter:NumberFormatter, **string:string**, type:int, _offset:?_)
 - `parse_ini_string`(**ini_string:string**, process_sections:bool, scanner_mode:int)
-- `sscanf`(**string:string**, **format:string**, vars:mixed)
+- `sscanf`(**string:string**, format:string, vars:mixed)
 - `locale_accept_from_http`(**header:string**)
 - `msgfmt_parse`(formatter:MessageFormatter, **string:string**)
-- `msgfmt_parse_message`(**locale:string**, **pattern:string**, **message:string**)
+- `msgfmt_parse_message`(locale:string, pattern:string, **message:string**)
 
 ## CSV
 
-- `str_getcsv`(**string:string**, **separator:string**, **enclosure:string**, **escape:string**)
+- `str_getcsv`(**string:string**, separator:string, **enclosure:string**, **escape:string**)
 - `fputcsv`(_stream:?_, fields:array, separator:string, enclosure:string, **escape:string**, eol:string)
 - `fgetcsv`(_stream:?_, length:int, separator:string, enclosure:string, **escape:string**)
-
-## Date
-
-- `date_create`(**datetime:string**, timezone:DateTimeZone)
-- `date_create_immutable`(**datetime:string**, timezone:DateTimeZone)
-- `date_create_from_format`(**format:string**, **datetime:string**, timezone:DateTimeZone)
-- `date_create_immutable_from_format`(**format:string**, **datetime:string**, timezone:DateTimeZone)
-- `date_parse`(**datetime:string**)
-- `date_parse_from_format`(**format:string**, **datetime:string**)
-- `date_format`(object:DateTimeInterface, **format:string**)
-- `datefmt_parse`(formatter:IntlDateFormatter, **string:string**, _offset:?_)
-- `datefmt_localtime`(formatter:IntlDateFormatter, **string:string**, _offset:?_)
 
 ## Images
 
@@ -274,10 +253,8 @@ Only change parameters which are in **bold**.
 
 ## Passwords
 
-- `password_get_info`(**hash:string**)
 - `password_hash`(**password:string**, algo:string|int|null, options:array)
-- `password_needs_rehash`(**hash:string**, algo:string|int|null, options:array)
-- `password_verify`(**password:string**, **hash:string**)
+- `password_verify`(**password:string**, hash:string)
 
 ## BC Math
 
@@ -313,41 +290,33 @@ Only change parameters which are in **bold**.
 ## PSpell
 
 - `pspell_new`(language:string, **spelling:string**, **jargon:string**, **encoding:string**, mode:int)
-- `pspell_new_personal`(**filename:string**, language:string, **spelling:string**, **jargon:string**, **encoding:string**, mode:int)
+- `pspell_new_personal`(filename:string, language:string, **spelling:string**, **jargon:string**, **encoding:string**, mode:int)
 - `pspell_check`(dictionary:PSpell\Dictionary, **word:string**)
 - `pspell_suggest`(dictionary:PSpell\Dictionary, **word:string**)
 - `pspell_store_replacement`(dictionary:PSpell\Dictionary, misspelled:string, **correct:string**)
 - `pspell_add_to_personal`(dictionary:PSpell\Dictionary, **word:string**)
 - `pspell_add_to_session`(dictionary:PSpell\Dictionary, **word:string**)
 - `pspell_config_create`(**language:string**, **spelling:string**, **jargon:string**, **encoding:string**)
-- `pspell_config_personal`(config:PSpell\Config, **filename:string**)
-- `pspell_config_dict_dir`(config:PSpell\Config, **directory:string**)
-- `pspell_config_data_dir`(config:PSpell\Config, **directory:string**)
-- `pspell_config_repl`(config:PSpell\Config, **filename:string**)
 
 ## Sodium
 
 - `sodium_crypto_aead_aes256gcm_encrypt`(**message:string**, **additional_data:string**, nonce:string, key:string)
-- `sodium_crypto_aead_aes256gcm_decrypt`(**ciphertext:string**, **additional_data:string**, nonce:string, key:string)
+- `sodium_crypto_aead_aes256gcm_decrypt`(ciphertext:string, **additional_data:string**, nonce:string, key:string)
 - `sodium_crypto_aead_chacha20poly1305_encrypt`(**message:string**, **additional_data:string**, nonce:string, key:string)
-- `sodium_crypto_aead_chacha20poly1305_decrypt`(**ciphertext:string**, **additional_data:string**, nonce:string, key:string)
+- `sodium_crypto_aead_chacha20poly1305_decrypt`(ciphertext:string, **additional_data:string**, nonce:string, key:string)
 - `sodium_crypto_aead_chacha20poly1305_ietf_encrypt`(**message:string**, **additional_data:string**, nonce:string, key:string)
-- `sodium_crypto_aead_chacha20poly1305_ietf_decrypt`(**ciphertext:string**, **additional_data:string**, nonce:string, key:string)
+- `sodium_crypto_aead_chacha20poly1305_ietf_decrypt`(ciphertext:string, **additional_data:string**, nonce:string, key:string)
 - `sodium_crypto_aead_xchacha20poly1305_ietf_encrypt`(**message:string**, **additional_data:string**, nonce:string, key:string)
-- `sodium_crypto_aead_xchacha20poly1305_ietf_decrypt`(**ciphertext:string**, **additional_data:string**, nonce:string, key:string)
+- `sodium_crypto_aead_xchacha20poly1305_ietf_decrypt`(ciphertext:string, **additional_data:string**, nonce:string, key:string)
 - `sodium_crypto_auth`(**message:string**, key:string)
 - `sodium_crypto_auth_verify`(mac:string, **message:string**, key:string)
 - `sodium_crypto_box`(**message:string**, nonce:string, key_pair:string)
-- `sodium_crypto_box_open`(**ciphertext:string**, nonce:string, key_pair:string)
 - `sodium_crypto_box_seal`(**message:string**, public_key:string)
-- `sodium_crypto_box_seal_open`(**ciphertext:string**, key_pair:string)
 - `sodium_crypto_generichash`(**message:string**, **key:string**, length:int)
 - `sodium_crypto_generichash_update`(state:string, **message:string**)
-- `sodium_crypto_pwhash_str_needs_rehash`(**password:string**, opslimit:int, memlimit:int)
 - `sodium_crypto_secretbox`(**message:string**, nonce:string, key:string)
-- `sodium_crypto_secretbox_open`(**ciphertext:string**, nonce:string, key:string)
 - `sodium_crypto_secretstream_xchacha20poly1305_push`(state:string, **message:string**, **additional_data:string**, tag:int)
-- `sodium_crypto_secretstream_xchacha20poly1305_pull`(state:string, **ciphertext:string**, **additional_data:string**)
+- `sodium_crypto_secretstream_xchacha20poly1305_pull`(state:string, ciphertext:string, **additional_data:string**)
 - `sodium_crypto_shorthash`(**message:string**, key:string)
 - `sodium_crypto_sign`(**message:string**, secret_key:string)
 - `sodium_crypto_sign_detached`(**message:string**, secret_key:string)
@@ -355,14 +324,6 @@ Only change parameters which are in **bold**.
 - `sodium_crypto_sign_verify_detached`(signature:string, **message:string**, public_key:string)
 - `sodium_crypto_stream_xor`(**message:string**, nonce:string, key:string)
 - `sodium_crypto_stream_xchacha20_xor`(**message:string**, nonce:string, key:string)
-
-## DNS
-
-- `gethostbyname`(**hostname:string**)
-- `gethostbynamel`(**hostname:string**)
-- `dns_get_record`(**hostname:string**, type:int, _authoritative_name_servers:?_, _additional_records:?_, raw:bool)
-- `dns_get_mx`(**hostname:string**, _hosts:?_, _weights:?_)
-- `getmxrr`(**hostname:string**, _hosts:?_, _weights:?_)
 
 ## Stream
 
@@ -375,14 +336,7 @@ Only change parameters which are in **bold**.
 - `socket_send`(socket:Socket, **data:string**, length:int, flags:int)
 - `socket_sendto`(socket:Socket, **data:string**, length:int, flags:int, address:string, port:int)
 
-## Logging
-
-- `trigger_error`(**message:string**, error_level:int)
-- `user_error`(**message:string**, error_level:int)
-- `openlog`(**prefix:string**, flags:int, facility:int)
-- `syslog`(priority:int, **message:string**)
-
 ## E-Mail
 
-- `mail`(**to:string**, **subject:string**, **message:string**, **additional_headers:array|string**, **additional_params:string**)
-- `mb_send_mail`(**to:string**, **subject:string**, **message:string**, **additional_headers:array|string**, additional_params:string)
+- `mail`(to:string, **subject:string**, **message:string**, **additional_headers:array|string**, **additional_params:string**)
+- `mb_send_mail`(to:string, **subject:string**, **message:string**, **additional_headers:array|string**, additional_params:string)

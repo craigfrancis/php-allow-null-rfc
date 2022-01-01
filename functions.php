@@ -1006,30 +1006,32 @@
 		// test('mb_send_mail', 4, mb_send_mail('user@example.com', 'Subject', 'Message', '', '-fwebmaster@example.com'), mb_send_mail('user@example.com', 'Subject', 'Message', NULL, '-fwebmaster@example.com'));
 
 //--------------------------------------------------
-// Check functions from functions-change.md
+// Check functions the MarkDown files
 
 	$functions_listed = [];
 	$functions_skipped = [];
 
-	foreach (file('functions-change.md') as $line_text) {
-		if (preg_match('/^-( \?)? `([^`]+)`\((.*)\)/', $line_text, $line_match)) {
-			$args = [];
-			foreach (array_map('trim', explode(',', $line_match[3])) as $k => $arg_info) {
-				if (preg_match('/^(\*\*)?([^:]+):([^\*]*)(\*\*)?$/', $arg_info, $arg_match)) {
-					$arg_number = ($k + 1);
-					$args[$arg_number] = ['name' => $arg_match[2], 'types' => $arg_match[2], 'make_nullable' => ($arg_match[1] == '**')];
-				} else {
-					echo $function_name . ' (' . trim($arg_info) . ') - Unrecognised Arg' . "\n";
+	foreach (['functions-change.md', 'functions-maybe.md'] as $file_name) { // 'maybe' replaces the args from 'change' (which has the smaller set of updates)
+		foreach (file($file_name) as $line_text) {
+			if (preg_match('/^-( \?)? `([^`]+)`\((.*)\)/', $line_text, $line_match)) {
+				$args = [];
+				foreach (array_map('trim', explode(',', $line_match[3])) as $k => $arg_info) {
+					if (preg_match('/^(\*\*)?([^:]+):([^\*!]*)(!)?(\*\*)?$/', $arg_info, $arg_match)) {
+						$arg_number = ($k + 1);
+						$args[$arg_number] = ['name' => $arg_match[2], 'types' => $arg_match[2], 'make_nullable' => ($arg_match[1] == '**')];
+					} else {
+						echo $function_name . ' (' . trim($arg_info) . ') - Unrecognised Arg' . "\n";
+					}
 				}
+				if ($line_match[1] == ' ?') {
+					$functions_skipped[] = $line_match[2];
+				} else {
+					$functions_listed[$line_match[2]] = $args;
+				}
+			// } else if (str_starts_with($line_text, '?')) {
+			} else if (trim($line_text) !== '' && trim($line_text) !== '---' && !preg_match('/^##? [A-Z]/', $line_text)) {
+				echo 'Unrecognised Line: "' . trim($line_text) . '"' . "\n";
 			}
-			if ($line_match[1] == ' ?') {
-				$functions_skipped[] = $line_match[2];
-			} else {
-				$functions_listed[$line_match[2]] = $args;
-			}
-		// } else if (str_starts_with($line_text, '?')) {
-		} else if (trim($line_text) !== '' && trim($line_text) !== '---' && !preg_match('/^##? [A-Z]/', $line_text)) {
-			echo 'Unrecognised Line: "' . trim($line_text) . '"' . "\n";
 		}
 	}
 

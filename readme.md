@@ -26,6 +26,12 @@ $name = $this->request->getQuery('name'); // CakePHP
 $name = $request->getGet('name'); // CodeIgniter
 ```
 
+And PHP will provide `NULL` for undefined variables, e.g.
+
+```php
+locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+```
+
 And `NULL` can be returned from functions, e.g.
 
 * `array_pop()`
@@ -69,6 +75,8 @@ Only the parameters in **bold** would be changed.
 
 Suggestions and pull requests welcome.
 
+There is also a [Maybe List](https://github.com/craigfrancis/php-allow-null-rfc/blob/main/functions-maybe.md), where the more questionable arguments end with a "!". For example, `strrpos()` accepting an empty string for `$needle` is wired in itself, and `sodium_crypto_box_open()` should never receive a blank `$ciphertext`.
+
 ## Decision Process
 
 Does the parameter work with `NULL`, in the same way it would with an empty string? e.g.
@@ -79,10 +87,6 @@ Does the parameter work with `NULL`, in the same way it would with an empty stri
 - `hash()` should **accept** `NULL` for `$data`.
 - `substr_count()` should **deprecate** `NULL` for `$needle` ("$needle cannot be empty" error).
 - `mb_convert_encoding()` should **deprecate** `NULL` for `$to_encoding` (requires a valid encoding).
-
-You could argue some parameters should not accept an empty string (e.g. `strrpos()` accepting an empty string for `$needle`), but those should be addressed in a future RFC, involving a discussion on any backwards compatibility issues for every change (there is no point complaining about `NULL` now, and then going though this process again if the developer simply uses `strval()` to get an empty string).
-
-One set of candidates that could be removed are functions like `sodium_crypto_box_open()` where a blank `$ciphertext` will always return `false` (for failure).
 
 ## Backward Incompatible Changes
 

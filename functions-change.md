@@ -104,7 +104,7 @@ Only change parameters which are in **bold**.
 - `mb_substr`(**string:string**, start:int, length:int, encoding:string)
 - `mb_substr_count`(**haystack:string**, needle:string, encoding:string)
 - `mb_str_split`(**string:string**, length:int, encoding:string)
-- `mb_split`(**pattern:string**, **string:string**, limit:int)
+- `mb_split`(pattern:string, **string:string**, limit:int)
 - `sodium_pad`(**string:string**, block_size:int)
 - `grapheme_substr`(**string:string**, offset:int, length:int)
 - `grapheme_extract`(**haystack:string**, size:int, type:int, offset:int, _next:?_)

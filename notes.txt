@@ -1,4 +1,34 @@
 
+First, check "zend_API.h", and look at how "zend_parse_arg_str()" works:
+
+	static zend_always_inline bool zend_parse_arg_str(zval *arg, zend_string **dest, bool check_null, uint32_t arg_num)
+	{
+		if (EXPECTED(Z_TYPE_P(arg) == IS_STRING)) {
+			*dest = Z_STR_P(arg);
+		} else if (check_null && Z_TYPE_P(arg) == IS_NULL) {
+			*dest = NULL;
+		} else {
+			return zend_parse_arg_str_slow(arg, dest, arg_num);
+		}
+		return 1;
+	}
+
+This is used with:
+
+	#define Z_PARAM_STR(dest) \
+		Z_PARAM_STR_EX(dest, 0, 0)
+
+	#define Z_PARAM_STR_OR_NULL(dest) \
+		Z_PARAM_STR_EX(dest, 1, 0)
+
+Can't simply change functions from using `Z_PARAM_STR` to `Z_PARAM_STR_OR_NULL`, as they are not written to handle NULL.
+
+Maybe add `Z_PARAM_STR_ACCEPT_NULL`?
+
+
+--------------------------------------------------
+
+
 grep -h -r -E '^\s*(ZEND_FUNCTION|PHP_FUNCTION|static void)|Z_PARAM_STR\(' ./php-src/
 
 Search
@@ -6,12 +36,16 @@ Search
 Replace
   $4
 
+--------------------------------------------------
+
 
 pattern:string... why can some be an empty string?
 
 
-Can this be done by changing `Z_PARAM_STR()` to `Z_PARAM_STR_OR_NULL()`... e.g html_entity_decode()
+--------------------------------------------------
 
+
+Can this be done by changing `Z_PARAM_STR()` to `Z_PARAM_STR_OR_NULL()`... e.g html_entity_decode()
 
 
 hash_pbkdf2('sha256', 'a', '', 1000) ... // Oddity, should an empty key be allowed?

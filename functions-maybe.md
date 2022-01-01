@@ -26,6 +26,7 @@ The ones ending in a "!" could allow `NULL`, but doing so is questionable - it m
 - `join`(**separator:array|string!**, array:array)
 - `chunk_split`(**string:string**, length:int, **separator:string!**)
 - `strtr`(**string:string**, **from:array|string!**, to:string)
+- `mb_split`(**pattern:string!**, **string:string**, limit:int)
 
 ## String Position
 

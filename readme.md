@@ -13,7 +13,7 @@
 
 ## Introduction
 
-PHP 8.1 introduced "Deprecate passing null to non-nullable arguments of internal functions" ([short discussion](https://externals.io/message/112327)), which is making it difficult for developers to upgrade.
+PHP 8.1 introduced "Deprecate passing null to non-nullable arguments of internal functions" ([short discussion](https://externals.io/message/112327)), which is making it difficult (time consuming) for developers to upgrade.
 
 Often `NULL` is used for undefined `GET`/`POST`/`COOKIE` variables:
 
@@ -24,12 +24,6 @@ $name = $request->input('name'); // Laravel
 $name = $request->get('name'); // Symfony
 $name = $this->request->getQuery('name'); // CakePHP
 $name = $request->getGet('name'); // CodeIgniter
-```
-
-And PHP will provide `NULL` for undefined variables, e.g.
-
-```php
-locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']);
 ```
 
 And `NULL` can be returned from functions, e.g.
@@ -55,11 +49,17 @@ socket_write($socket, $name);
 xmlwriter_text($writer, $name);
 ```
 
-This includes developers explicitly using `NULL` to skip certain parameters, e.g. `$additional_headers` in `mail()`.
+Another example is when PHP provides `NULL` for undefined variables, e.g.
 
-Currently this affects those using PHP 8.1 with `E_DEPRECATED`, but it implies everyone will need to modify their code in the future.
+```php
+locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+```
 
-It also applies even if the developer is not using `strict_types=1`.
+Or when developers explicitly use `NULL` to skip certain parameters, e.g. `$additional_headers` in `mail()`.
+
+Currently this only affects those using PHP 8.1 with `E_DEPRECATED`, but it implies everyone will need to modify their code in the future.
+
+It also applies to those developers not using `strict_types=1`.
 
 And while the individual changes are easy - there are many of them, they are difficult to find, and often pointless (e.g. `urlencode(strval($name))`).
 
@@ -82,7 +82,7 @@ There is also a [Maybe List](https://github.com/craigfrancis/php-allow-null-rfc/
 Does the parameter work with `NULL`, in the same way it would with an empty string? e.g.
 
 - `preg_match()` should **deprecate** `NULL` for `$pattern` ("empty regular expression" warning).
-- `preg_match()` should **accept** `NULL` for `$subject` (checking user input).
+- `preg_match()` should **accept** `NULL` for `$subject` (e.g. checking user input).
 - `hash_file()` should **deprecate** `NULL` for the `$filename`.
 - `hash()` should **accept** `NULL` for `$data`.
 - `substr_count()` should **deprecate** `NULL` for `$needle` ("$needle cannot be empty" error).

@@ -113,7 +113,6 @@
 
 		test('addslashes', 1, addslashes(''), addslashes(NULL));
 		test('addcslashes', 1, addcslashes('', 'A..z'), addcslashes(NULL, 'A..z'));
-		test('addcslashes', 2, addcslashes('A', ''), addcslashes('A', NULL));
 		test('stripslashes', 1, stripslashes(''), stripslashes(NULL));
 		test('stripcslashes', 1, stripcslashes(''), stripcslashes(NULL));
 		test('quotemeta', 1, quotemeta(''), quotemeta(NULL));

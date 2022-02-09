@@ -23,7 +23,7 @@ Only change parameters which are in **bold**.
 - `html_entity_decode`(**string:string**, flags:int, encoding:string)
 - `htmlentities`(**string:string**, flags:int, encoding:string, double_encode:bool)
 - `addslashes`(**string:string**)
-- `addcslashes`(**string:string**, **characters:string**)
+- `addcslashes`(**string:string**, characters:string)
 - `stripslashes`(**string:string**)
 - `stripcslashes`(**string:string**)
 - `quotemeta`(**string:string**)

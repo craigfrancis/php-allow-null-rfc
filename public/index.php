@@ -7,6 +7,18 @@
 
 	require_once(ROOT . '/../private/config.php');
 
+	if (PHP_VERSION_ID < 80000) {
+		function str_contains($haystack, $needle) {
+			return ($needle == '' || strpos($haystack, $needle) !== false);
+		}
+		function str_starts_with($haystack, $needle) {
+			return (strncmp($haystack, $needle, strlen($needle)) === 0);
+		}
+		function str_ends_with($haystack, $needle) {
+			return ($needle === '' || ($haystack !== '' && substr_compare($haystack, $needle, 0 - strlen($needle)) === 0));
+		}
+	}
+
 	$now = new DateTime();
 	$now_iso = $now->format('Y-m-d H:i:s');
 

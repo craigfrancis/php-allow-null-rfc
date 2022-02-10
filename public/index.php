@@ -701,7 +701,7 @@
 										<input type="hidden" name="q<?= htmlspecialchars($q) ?>f" value="<?= htmlspecialchars($question['function']) ?>:<?= htmlspecialchars($question['argument']) ?>" />
 
 										<label class="option" data-key="d"><input type="radio" name="q<?= htmlspecialchars($q) ?>s" value="1"<?= ($question['current_selection'] == 1 ? ' checked="checked"' : '') ?> /> <span>Don't Mind</span></label>
-										<label class="option" data-key="e"><input type="radio" name="q<?= htmlspecialchars($q) ?>s" value="2"<?= ($question['current_selection'] == 2 ? ' checked="checked"' : '') ?> /> <span>Accept NULL</span></label>
+										<label class="option" data-key="a"><input type="radio" name="q<?= htmlspecialchars($q) ?>s" value="2"<?= ($question['current_selection'] == 2 ? ' checked="checked"' : '') ?> /> <span>Accept NULL</span></label>
 										<label class="option" data-key="f"><input type="radio" name="q<?= htmlspecialchars($q) ?>s" value="3"<?= ($question['current_selection'] == 3 ? ' checked="checked"' : '') ?> /> <span>Fatal Error</span></label>
 
 										<label class="notes"><span>Notes:</span> <input type="text" name="q<?= htmlspecialchars($q) ?>n" value="<?= htmlspecialchars($question['current_notes']) ?>" maxlength="200" /></label>

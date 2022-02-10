@@ -164,7 +164,7 @@
 	}
 
 	section.functions fieldset label.option[data-key="d"] span::first-letter,
-	section.functions fieldset label.option[data-key="e"] span::first-letter,
+	section.functions fieldset label.option[data-key="a"] span::first-letter,
 	section.functions fieldset label.option[data-key="f"] span::first-letter {
 		text-decoration: underline;
 	}

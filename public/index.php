@@ -5,7 +5,7 @@
 
 	define('ROOT', dirname(__FILE__));
 
-	require_once(ROOT . '/config.php');
+	require_once(ROOT . '/../private/config.php');
 
 	$now = new DateTime();
 	$now_iso = $now->format('Y-m-d H:i:s');

@@ -340,7 +340,7 @@
 
 	$current_answers = [];
 
-	if ($page >= 2 || is_int($output_results)) {
+	if ($page >= 3 || is_int($output_results)) {
 
 		$sql = 'SELECT
 					`a`.`function`,
@@ -369,7 +369,7 @@
 //--------------------------------------------------
 // Save answers
 
-	if ($page >= 2 && $request_valid_post && $output_results === NULL) {
+	if ($page >= 3 && $request_valid_post && $output_results === NULL) {
 
 		$confirm_saved = [];
 
@@ -483,7 +483,7 @@
 		if ($button === 'save') {
 			$url = '/?results=all';
 		} else {
-			if ($button === 'next') {
+			if ($button === 'next' || $button === 'continue') {
 				$page++;
 			}
 			$url = '/?page=' . urlencode($page);
@@ -504,7 +504,7 @@
 	$question_id = 0;
 	$function_arguments = [];
 
-	if ($page >= 2 || is_int($output_results)) {
+	if ($page >= 3 || is_int($output_results)) {
 
 		$changes_md = file_get_contents(ROOT . '/../functions-change.md');
 		$changes_md = array_filter(array_map('trim', explode("\n", $changes_md)));
@@ -564,7 +564,7 @@
 
 		}
 
-		if ($page >= 2) {
+		if ($page >= 3) {
 
 			$section_pages = [];
 			foreach ($sections as $section_id => $section_name) {
@@ -578,7 +578,7 @@
 					];
 			}
 
-			$focus_selection = ($page - 1);
+			$focus_selection = ($page - 2);
 			if (isset($sections[$focus_selection])) {
 				if (!isset($sections[$focus_selection + 1])) {
 					$section_last = true;
@@ -772,17 +772,25 @@
 
 				<?php } ?>
 
-				<?php if ($person_details && $person_details['approach'] && ($page >= 2 || is_int($output_results))) { ?>
+				<?php if ($page == 2) { ?>
 
 					<hr />
 
-					<?php if ($page == 2) { ?>
+					<p>Thank you.</p>
 
-						<p>We shouldn't update parameters where NULL is clearly an invalid value; e.g, PHP probably should complain with an empty $needle in <a href="https://php.net/strpos" target="_blank" rel="noopener">strpos()</a>, or $characters in <a href="https://php.net/strpos" target="_blank" rel="noopener">trim()</a>, or $method in <a href="https://php.net/strpos" target="_blank" rel="noopener">method_exists()</a>.</p>
+					<p>There is an <strong>optional</strong> second part to this questionnaire, which allows you to confirm which functions should be updated.</p>
 
-						<p>While you can <a href="https://github.com/craigfrancis/php-allow-null-rfc/issues" target="_blank" rel="noopener">suggest additional parameters</a>; which of the following parameters should continue to <strong class="accept_null">Accept NULL</strong>, or should NULL trigger a <strong class="fatal_error">Fatal Error</strong>?</p>
+					<p>For example, PHP probably should complain about an empty $needle in <a href="https://php.net/strpos" target="_blank" rel="noopener">strpos()</a>, or $characters in <a href="https://php.net/strpos" target="_blank" rel="noopener">trim()</a>, or $method in <a href="https://php.net/strpos" target="_blank" rel="noopener">method_exists()</a>.</p>
 
-					<?php } ?>
+					<p>You can also <a href="https://github.com/craigfrancis/php-allow-null-rfc/issues" target="_blank" rel="noopener">suggest additional parameters</a>.</p>
+
+					<div><input type="submit" name="button" value="Continue" /></div>
+
+				<?php } else if ($person_details && $person_details['approach'] && ($page >= 3 || is_int($output_results))) { ?>
+
+					<hr />
+
+					<p>Which of the following parameters should continue to <strong class="accept_null">Accept NULL</strong>, or should NULL trigger a <strong class="fatal_error">Fatal Error</strong>?</p>
 
 					<?php foreach ($sections as $section_id => $section_name) { ?>
 
@@ -843,7 +851,7 @@
 
 					<?php } ?>
 
-					<?php if ($page >= 2) { ?>
+					<?php if ($page >= 3) { ?>
 
 						<div><input type="submit" name="button" value="<?= htmlspecialchars($section_last ? 'Save' : 'Next') ?>" /></div>
 

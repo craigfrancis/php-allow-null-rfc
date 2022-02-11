@@ -228,3 +228,24 @@
 	.basic_table table tbody th {
 		font-weight: normal;
 	}
+
+	nav.sections ul {
+		padding: 0;
+		margin: 2em 0 0 1.5em;
+	}
+
+	nav.sections ul li.answered_none span.answers {
+		color: #747474;
+	}
+
+	nav.sections ul li.answered_all span.questions::after {
+		content: ' ✓';
+		color: #074100;
+		font-weight: bold;
+	}
+
+	nav.sections ul li.current a {
+		font-weight: bold;
+		text-decoration: none;
+		color: inherit;
+	}

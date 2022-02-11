@@ -329,12 +329,18 @@
 
 	}
 
+	if ($person_id === NULL && $page > 0) {
+		$url = '/';
+		header('Location: ' . $url);
+		exit('<p>Go to <a href="' . htmlspecialchars($url) . '">next page</a>.</p>');
+	}
+
 //--------------------------------------------------
 // Current answers
 
 	$current_answers = [];
 
-	if ($person_id || is_int($output_results)) {
+	if ($page >= 2 || is_int($output_results)) {
 
 		$sql = 'SELECT
 					`a`.`function`,
@@ -363,7 +369,7 @@
 //--------------------------------------------------
 // Save answers
 
-	if ($request_valid_post && $output_results === NULL) {
+	if ($page >= 2 && $request_valid_post && $output_results === NULL) {
 
 		$confirm_saved = [];
 
@@ -491,11 +497,14 @@
 
 	$sections = [];
 	$section_id = 0;
+	$section_last = NULL;
+	$section_pages = NULL;
+	$section_answers = [];
 	$questions = [];
 	$question_id = 0;
 	$function_arguments = [];
 
-	if ($person_id || is_int($output_results)) {
+	if ($page >= 2 || is_int($output_results)) {
 
 		$changes_md = file_get_contents(ROOT . '/../functions-change.md');
 		$changes_md = array_filter(array_map('trim', explode("\n", $changes_md)));
@@ -507,6 +516,7 @@
 				$section_id++;
 
 				$sections[$section_id] = $matches[1];
+				$section_answers[$section_id] = 0;
 
 			} else if ($section_id > 0 && preg_match('/^- `([^`]+)`\(([^\)]+)\)$/', $change, $matches)) {
 
@@ -528,6 +538,10 @@
 
 						$current_answer = ($current_answers[$function][$k] ?? NULL);
 
+						if ($current_answer) {
+							$section_answers[$section_id]++;
+						}
+
 						$questions[$section_id][$question_id] = [
 								'function'          => $function,
 								'function_url'      => 'https://php.net/' . urlencode($function),
@@ -546,6 +560,30 @@
 				var_dump($change);
 				exit();
 
+			}
+
+		}
+
+		if ($page >= 2) {
+
+			$section_pages = [];
+			foreach ($sections as $section_id => $section_name) {
+				$section_page_id = ($section_id + 1);
+				$section_pages[] = [
+						'id' => $section_page_id,
+						'name' => $section_name,
+						'answers' => $section_answers[$section_id],
+						'questions' => count($questions[$section_id] ?? []),
+						'url' => '/?page=' . urlencode($section_page_id),
+					];
+			}
+
+			$focus_selection = ($page - 1);
+			if (isset($sections[$focus_selection])) {
+				if (!isset($sections[$focus_selection + 1])) {
+					$section_last = true;
+				}
+				$sections = [$focus_selection => $sections[$focus_selection]];
 			}
 
 		}
@@ -589,7 +627,7 @@
 	header("Permissions-Policy: accelerometer=(), autoplay=(), camera=(), ch-device-memory=(), ch-downlink=(), ch-dpr=(), ch-ect=(), ch-prefers-color-scheme=(), ch-rtt=(), ch-ua=(), ch-ua-arch=(), ch-ua-bitness=(), ch-ua-full-version=(), ch-ua-full-version-list=(), ch-ua-mobile=(), ch-ua-model=(), ch-ua-platform=(), ch-ua-platform-version=(), ch-viewport-width=(), ch-width=(), clipboard-read=(), clipboard-write=(), cross-origin-isolated=(self), display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), hid=(), idle-detection=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), otp-credentials=(self), payment=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), usb=(), xr-spatial-tracking=(), sync-xhr=(), picture-in-picture=()");
 
 	if (str_starts_with(ROOT, '/Volumes')) {
-		header("Content-Type: application/xhtml+xml; charset=UTF-8");
+		// header("Content-Type: application/xhtml+xml; charset=UTF-8");
 	}
 
 ?>
@@ -716,7 +754,7 @@
 							<p><input type="submit" name="button" value="Next" /></p>
 						</fieldset>
 
-					<?php } else if ($page == 2 || is_int($output_results)) { ?>
+					<?php } else if ($page >= 2 || is_int($output_results)) { ?>
 
 						<p>
 							<?= htmlspecialchars($approach_label) ?>:
@@ -725,7 +763,7 @@
 							<?php } else { ?>
 								<strong>N/A</strong>
 							<?php } ?>
-							<?php if ($page == 2) { ?>
+							<?php if ($page >= 2) { ?>
 								(<a href="/?page=1">edit</a>)
 							<?php } ?>
 						</p>
@@ -734,7 +772,7 @@
 
 				<?php } ?>
 
-				<?php if ($person_details && $person_details['approach'] && ($page == 2 || is_int($output_results))) { ?>
+				<?php if ($person_details && $person_details['approach'] && ($page >= 2 || is_int($output_results))) { ?>
 
 					<hr />
 
@@ -805,8 +843,31 @@
 
 					<?php } ?>
 
-					<?php if ($page == 2) { ?>
-						<div><input type="submit" name="button" value="Save" /></div>
+					<?php if ($page >= 2) { ?>
+
+						<div><input type="submit" name="button" value="<?= htmlspecialchars($section_last ? 'Save' : 'Next') ?>" /></div>
+
+						<hr />
+
+						<nav class="sections">
+							<ul>
+								<?php
+									foreach ($section_pages as $p) {
+										$classes = [];
+										$classes[] = ($p['id'] == $page ? 'current' : 'other');
+										if ($p['answers'] == 0) {
+											$classes[] = 'answered_none';
+										} else if ($p['answers'] == $p['questions']) {
+											$classes[] = 'answered_all';
+										}
+										echo '
+											<li class="' . htmlspecialchars(implode(' ', $classes)) . '"><a href="' . htmlspecialchars($p['url']) . '">' . htmlspecialchars($p['name']) . '</a> <span class="answers"><span>' . htmlspecialchars($p['answers']) . '</span> of </span><span class="questions">' . htmlspecialchars($p['questions']) . '</span></li>';
+									}
+									echo "\n";
+								?>
+							</ul>
+						</nav>
+
 					<?php } ?>
 
 				<?php } ?>

@@ -12,7 +12,10 @@
 		return offset_bottom(element.offsetParent) + element.offsetTop + element.offsetHeight;
 	}
 
-	var save_csrf_input = null,
+	var count_questions = [],
+		count_wrapper = null,
+		count_span = null,
+		save_csrf_input = null,
 		save_queue = {},
 		save_xhr = null,
 		save_response = null;
@@ -130,6 +133,22 @@
 
 		if (save_response && save_response['csrf']) {
 			save_csrf_input.value = save_response['csrf'];
+		}
+
+		var questions_answered = 0,
+			wrapper_classes = count_wrapper.className.replace(/\b(answered_none|answered_all)\b/g, ' ').trim();
+		for (var k = (count_questions.length - 1); k >= 0; k--) {
+			if (parseInt(count_questions[k].getAttribute('data-value'), 10) > 1) {
+				questions_answered++;
+			}
+		}
+		count_span.textContent = questions_answered;
+		if (questions_answered == 0) {
+			count_wrapper.className = wrapper_classes + ' answered_none';
+		} else if (questions_answered == count_questions.length) {
+			count_wrapper.className = wrapper_classes + ' answered_all';
+		} else {
+			count_wrapper.className = wrapper_classes;
 		}
 
 		save_xhr = null;
@@ -259,6 +278,12 @@
 		}
 
 		save_csrf_input = document.querySelector('input[name="csrf"]');
+
+		count_questions = document.querySelectorAll('section.functions fieldset[data-value]');
+		count_wrapper = document.querySelector('nav.sections ul li.current');
+		if (count_wrapper) {
+			count_span = count_wrapper.querySelector('span.answers span');
+		}
 
 	}
 

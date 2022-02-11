@@ -34,7 +34,7 @@
 	$approach_label = 'How should PHP 9 work?';
 	$approaches = [
 			'1' => 'Update parameters to explicitly allow NULL (e.g. `?string`)',
-			'2' => 'NULL should trigger a Fatal Error when using strict_types=1, for everyone else NULL should be accepted',
+			'2' => 'NULL should trigger a Fatal Error when using strict_types=1, for everyone else NULL should be treated as an empty string',
 			'3' => 'NULL should trigger a Fatal Error for everyone',
 			'4' => 'Don\'t Mind',
 		];

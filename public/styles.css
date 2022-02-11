@@ -39,6 +39,18 @@
 		border-bottom: 1px solid #d8d8d8;
 	}
 
+	h2.sub_heading {
+		font-size: 1em;
+	}
+
+	h2.sub_heading + .basic_table {
+		margin-left: 1em;
+	}
+
+	.basic_table + h2.sub_heading {
+		margin-top: 2em;
+	}
+
 	p.warning {
 		position: fixed;
 		top: 0;

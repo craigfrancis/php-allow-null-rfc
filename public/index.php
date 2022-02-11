@@ -160,6 +160,7 @@
 						`p`.`id`,
 						`p`.`name`,
 						`p`.`notes`,
+						`p`.`approach`,
 						`p`.`created`
 					FROM
 						`person` AS `p`
@@ -673,11 +674,13 @@
 				<p>Only showing the last <strong><?= htmlspecialchars($results_limit) ?></strong> results.</p>
 			<?php } ?>
 
+			<h2 class="sub_heading">Results</h2>
 			<div class="basic_table">
 				<table>
 					<thead>
 						<tr>
 							<th scope="col">Person</th>
+							<th scope="col">Approach</th>
 							<th scope="col">Accept NULL</th>
 							<th scope="col">Fatal Error</th>
 							<th scope="col">Start</th>
@@ -688,8 +691,9 @@
 						<?php foreach ($person_list as $p) { ?>
 							<tr>
 								<th><a href="<?= htmlspecialchars($p['url']) ?>"><?= htmlspecialchars($p['name']) ?></a></th>
-								<td><strong class="accept_null"><?= htmlspecialchars($p['counts']['2']) ?></strong></td>
-								<td><strong class="fatal_error"><?= htmlspecialchars($p['counts']['3']) ?></strong></td>
+								<td><?= htmlspecialchars($p['approach'] == 0 ? '-' : $p['approach']) ?></td>
+								<td><strong class="accept_null"><?= htmlspecialchars($p['counts']['2'] == 0 ? '-' : $p['counts']['2']) ?></strong></td>
+								<td><strong class="fatal_error"><?= htmlspecialchars($p['counts']['3'] == 0 ? '-' : $p['counts']['3']) ?></strong></td>
 								<td><?= htmlspecialchars($p['created']->format('H:i - jS M Y')) ?></td>
 								<td><?= htmlspecialchars($p['ended']->format('H:i - jS M Y')) ?></td>
 							</tr>
@@ -697,6 +701,13 @@
 					</tbody>
 				</table>
 			</div>
+
+			<h2 class="sub_heading">Approaches:</h2>
+			<ol>
+				<?php foreach ($approaches as $approach) { ?>
+					<li><?= htmlspecialchars($approach) ?></li>
+				<?php } ?>
+			</ol>
 
 		<?php } else { ?>
 

@@ -123,6 +123,7 @@
 	$person_details = NULL;
 	$person_new = [
 			'name'     => ($_POST['name'] ?? NULL),
+			'notes'    => ($_POST['notes'] ?? NULL),
 			'approach' => ($_POST['approach'] ?? NULL),
 			'voter'    => ($_POST['voter'] ?? NULL),
 		];
@@ -134,6 +135,7 @@
 			$sql = 'SELECT
 						`p`.`id`,
 						`p`.`name`,
+						`p`.`notes`,
 						`p`.`approach`,
 						`p`.`voter`
 					FROM
@@ -157,6 +159,7 @@
 			$sql = 'SELECT
 						`p`.`id`,
 						`p`.`name`,
+						`p`.`notes`,
 						`p`.`created`
 					FROM
 						`person` AS `p`
@@ -224,6 +227,7 @@
 			$sql = 'SELECT
 						`p`.`id`,
 						`p`.`name`,
+						`p`.`notes`,
 						`p`.`approach`,
 						`p`.`voter`
 					FROM
@@ -255,12 +259,14 @@
 				$person_uuid = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($person_uuid), 4));
 
 				$person_details['name'] = strval($person_new['name']);
+				$person_details['notes'] = strval($person_new['notes']);
 
 				$sql = 'INSERT INTO `person` (
 							`id`,
 							`uuid`,
 							`ip`,
 							`name`,
+							`notes`,
 							`created`,
 							`deleted`
 						) VALUES (
@@ -269,10 +275,11 @@
 							?,
 							?,
 							?,
+							?,
 							"0000-00-00 00:00:00"
 						)';
 
-				$statement = db_query($sql, [$person_uuid, $remote_ip, $person_details['name'], $now_iso]);
+				$statement = db_query($sql, [$person_uuid, $remote_ip, $person_details['name'], $person_details['notes'], $now_iso]);
 
 				$person_id = $statement->insert_id;
 
@@ -697,7 +704,11 @@
 
 				<?php if (is_int($output_results)) { ?>
 
-					<p>Results from <strong><?= htmlspecialchars($person_details['name']) ?></strong> (<a href="/?results=all">back</a>):</p>
+					<p>Results from <strong><?= htmlspecialchars($person_details['name']) ?></strong> (<a href="/?results=all">back</a>)</p>
+
+					<?php if ($person_details['notes']) { ?>
+						<p class="person_notes"><?= htmlspecialchars($person_details['notes']) ?></p>
+					<?php } ?>
 
 				<?php } else if ($page > 0) { ?>
 
@@ -705,11 +716,18 @@
 
 				<?php } else { ?>
 
-					<div class="row">
+					<div class="row person_name">
 						<label for="field_name">Your Name:</label>
 						<input id="field_name" name="name" type="text" value="<?= htmlspecialchars($person_details ? $person_details['name'] : '') ?>" maxlength="30" />
-						<input type="submit" name="button" value="Next" />
 					</div>
+
+					<div class="row person_notes">
+						<label for="field_notes">Notes About You:</label>
+						<input id="field_notes" name="notes" type="text" value="<?= htmlspecialchars($person_details ? $person_details['notes'] : '') ?>" maxlength="200" />
+						<span>e.g. Do you maintain any open source projects? Can you vote on this RFC? etc.</span>
+					</div>
+
+					<div><input type="submit" name="button" value="Next" /></div>
 
 				<?php } ?>
 

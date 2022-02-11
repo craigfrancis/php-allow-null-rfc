@@ -568,7 +568,7 @@
 
 			$section_pages = [];
 			foreach ($sections as $section_id => $section_name) {
-				$section_page_id = ($section_id + 1);
+				$section_page_id = ($section_id + 2);
 				$section_pages[] = [
 						'id' => $section_page_id,
 						'name' => $section_name,

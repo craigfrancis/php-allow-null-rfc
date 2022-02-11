@@ -666,7 +666,7 @@
 
 		<h1>Allow NULL</h1>
 
-		<p>A questionnaire to see which function parameters should continue to accept NULL, as per the <a href="https://wiki.php.net/rfc/allow_null" target="_blank" rel="noopener">Allow NULL RFC</a>.</p>
+		<p>A questionnaire on how to implement the <a href="https://wiki.php.net/rfc/allow_null" target="_blank" rel="noopener">Allow NULL RFC</a>.</p>
 
 		<?php if ($person_list) { ?>
 

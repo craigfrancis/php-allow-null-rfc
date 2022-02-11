@@ -97,6 +97,10 @@
 		overflow-x: auto;
 	}
 
+	code.block a {
+		color: #000;
+	}
+
 	code.block span.literal_string { color: #074100; background-color: #E3F2E1; }
 	code.block span.nullable { color: #C80064; background-color: #F2E1EA; }
 	code.block span.comment, code.block span.comment a { color: #707070; }

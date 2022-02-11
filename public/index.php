@@ -721,12 +721,14 @@
 
 						<p>NULL is often used in PHP, e.g.</p>
 						<code class="block">
-							setcookie('name', 'value', 0, <span class="nullable">NULL</span>, <span class="nullable">NULL</span>, true, true);<br />
+							<a href="https://php.net/mail" target="_blank" rel="noopener">mail</a>('nobody@example.com', 'subject', 'message', <span class="nullable">NULL</span>, '-fwebmaster@example.com');<br />
+							<br />
+							<a href="https://php.net/setcookie" target="_blank" rel="noopener">setcookie</a>('name', 'value', 0, <span class="nullable">NULL</span>, <span class="nullable">NULL</span>, true, true);<br />
 							<br />
 							<span class="nullable">$search</span> = $request->get('q'); <span class="comment">// e.g. <a href="https://github.com/symfony/symfony/blob/34a265c286fe30a309ab77e57a1f69d7bbd76583/src/Symfony/Component/HttpFoundation/Request.php#L674" target="_blank" rel="noopener">Symfony returns NULL</a> if user value not provided (e.g. $_GET)</span><br />
-							$results = $entries->findBy([<span class="literal_string">'name'</span> => trim(<span class="nullable">$search</span>]);<br />
-							$url = <span class="literal_string">'./?q='</span> . urlencode(<span class="nullable">$search</span>);<br />
-							echo <span class="literal_string">'Search for: '</span> . htmlspecialchars(<span class="nullable">$search</span>);
+							$results = $entries->findBy([<span class="literal_string">'name'</span> => <a href="https://php.net/trim" target="_blank" rel="noopener">trim</a>(<span class="nullable">$search</span>]);<br />
+							$url = <span class="literal_string">'./?q='</span> . <a href="https://php.net/urlencode" target="_blank" rel="noopener">urlencode</a>(<span class="nullable">$search</span>);<br />
+							echo <span class="literal_string">'Search for: '</span> . <a href="https://php.net/htmlspecialchars" target="_blank" rel="noopener">htmlspecialchars</a>(<span class="nullable">$search</span>);
 						</code>
 
 						<p>Currently these functions have signatures that state they only accept strings, e.g.</p>

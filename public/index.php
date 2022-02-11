@@ -19,6 +19,8 @@
 		}
 	}
 
+	$results_limit = 50;
+
 	$now = new DateTime();
 	$now_iso = $now->format('Y-m-d H:i:s');
 
@@ -26,6 +28,8 @@
 	if ($output_results !== NULL && $output_results !== 'all') {
 		$output_results = intval($output_results);
 	}
+
+	$page = intval($_GET['page'] ?? 0);
 
 	$approach_label = 'How should PHP 9 work?';
 	$approaches = [
@@ -48,6 +52,29 @@
 
 	if (!$db->real_connect($db_host, $db_user, $db_pass, $db_name, NULL, NULL, ($db_ca_certificate ? MYSQLI_CLIENT_SSL : 0))) {
 		exit('<p>Cannot connect to database</p>');
+	}
+
+	function db_query($sql, $parameters) {
+		global $db;
+		$ref_types = '';
+		$ref_values = [];
+		foreach ($parameters as $key => $value) {
+			$ref_types .= (is_int($value) ? 'i' : 's'); // 'd' for double, or 'b' for blob.
+			$ref_values[] = &$parameters[$key];
+		}
+		array_unshift($ref_values, $ref_types);
+		if (function_exists('is_literal') && !is_literal($sql)) {
+			exit('SQL is not a literal.');
+		}
+		$statement = $db->prepare($sql);
+		call_user_func_array([$statement, 'bind_param'], $ref_values);
+		$statement->execute();
+		return $statement;
+	}
+
+	function db_select($sql, $parameters) {
+		$statement = db_query($sql, $parameters);
+		return $statement->get_result();
 	}
 
 //--------------------------------------------------
@@ -115,10 +142,7 @@
 						`p`.`id` = ? AND
 						`p`.`deleted` = "0000-00-00 00:00:00"';
 
-			$statement = $db->prepare($sql);
-			$statement->bind_param('i', $output_results);
-			$statement->execute();
-			$result = $statement->get_result();
+			$result = db_select($sql, [$output_results]);
 
 			if ($row = $result->fetch_assoc()) {
 				$person_details = $row;
@@ -141,11 +165,9 @@
 					ORDER BY
 						`p`.`created` DESC
 					LIMIT
-						50';
+						?';
 
-			$statement = $db->prepare($sql);
-			$statement->execute();
-			$result = $statement->get_result();
+			$result = db_select($sql, [$results_limit]);
 
 			$person_list = [];
 
@@ -181,16 +203,7 @@
 							`a`.`person_id`,
 							`a`.`selection`';
 
-				$parameters = [];
-				$parameters[] = str_repeat('i', $person_count);
-				foreach ($person_list as $id => $person) {
-					$parameters[] = &$person_list[$id]['id'];
-				}
-
-				$statement = $db->prepare($sql);
-				call_user_func_array([$statement, 'bind_param'], $parameters);
-				$statement->execute();
-				$result = $statement->get_result();
+				$result = db_select($sql, array_keys($person_list));
 
 				while ($row = $result->fetch_assoc()) {
 					$person_list[$row['person_id']]['counts'][$row['selection']] = $row['c'];
@@ -219,10 +232,7 @@
 						`p`.`uuid` = ? AND
 						`p`.`deleted` = "0000-00-00 00:00:00"';
 
-			$statement = $db->prepare($sql);
-			$statement->bind_param('s', $person_uuid);
-			$statement->execute();
-			$result = $statement->get_result();
+			$result = db_select($sql, [$person_uuid]);
 
 			if ($row = $result->fetch_assoc()) {
 				$person_id = intval($row['id']);
@@ -246,24 +256,56 @@
 
 				$person_details['name'] = strval($person_new['name']);
 
-				$statement = $db->prepare('INSERT INTO `person` (`id`, `uuid`, `ip`, `name`, `created`, `deleted`) VALUES ("", ?, ?, ?, ?, "0000-00-00 00:00:00")');
-				$statement->bind_param('ssss', $person_uuid, $remote_ip, $person_details['name'], $now_iso);
-				$statement->execute();
+				$sql = 'INSERT INTO `person` (
+							`id`,
+							`uuid`,
+							`ip`,
+							`name`,
+							`created`,
+							`deleted`
+						) VALUES (
+							"",
+							?,
+							?,
+							?,
+							?,
+							"0000-00-00 00:00:00"
+						)';
+
+				$statement = db_query($sql, [$person_uuid, $remote_ip, $person_details['name'], $now_iso]);
 
 				$person_id = $statement->insert_id;
 
 			} else {
 
 				foreach ($person_new as $new_field => $new_value) {
-					if ($new_value !== NULL && $person_details[$new_field] !== $new_value) {
+					if ($new_value !== NULL && strval($person_details[$new_field]) !== strval($new_value)) {
 
-						$statement = $db->prepare('INSERT INTO `person_log` (`person_id`, `created`, `field`, `old_value`, `new_value`) VALUES (?, ?, ?, ?, ?)');
-						$statement->bind_param('issss', $person_id, $now_iso, $new_field, $person_details[$new_field], $new_value);
-						$statement->execute();
+						$sql = 'INSERT INTO `person_log` (
+									`person_id`,
+									`created`,
+									`field`,
+									`old_value`,
+									`new_value`
+								) VALUES (
+									?,
+									?,
+									?,
+									?,
+									?
+								)';
 
-						$statement = $db->prepare('UPDATE `person` SET `' . $new_field . '` = ? WHERE `id` = ? AND `deleted` = "0000-00-00 00:00:00"');
-						$statement->bind_param('si', $new_value, $person_id);
-						$statement->execute();
+						db_query($sql, [$person_id, $now_iso, $new_field, $person_details[$new_field], $new_value]);
+
+						$sql = 'UPDATE
+									`person`
+								SET
+									`' . $new_field . '` = ?
+								WHERE
+									`id` = ? AND
+									`deleted` = "0000-00-00 00:00:00"';
+
+						db_query($sql, [$new_value, $person_id]);
 
 						$person_details[$new_field] = $new_value;
 
@@ -307,10 +349,7 @@
 
 		$select_id = ($output_results ? $output_results : $person_id);
 
-		$statement = $db->prepare($sql);
-		$statement->bind_param('s', $select_id);
-		$statement->execute();
-		$result = $statement->get_result();
+		$result = db_select($sql, [$select_id]);
 
 		while ($row = $result->fetch_assoc()) {
 			$current_answers[$row['function']][$row['argument']] = [
@@ -366,14 +405,40 @@
 
 						} else {
 
-							$statement = $db->prepare('UPDATE `answer` SET `deleted` = ? WHERE `person_id` = ? AND `function` = ? AND `argument` = ? AND `deleted` = "0000-00-00 00:00:00"');
-							$statement->bind_param('ssss', $now_iso, $person_id, $value_function, $value_argument);
-							$statement->execute();
+							$sql = 'UPDATE
+										`answer`
+									SET
+										`deleted` = ?
+									WHERE
+										`person_id` = ? AND
+										`function` = ? AND
+										`argument` = ? AND
+										`deleted` = "0000-00-00 00:00:00"';
+
+							db_query($sql, [$now_iso, $person_id, $value_function, $value_argument]);
 
 							if ($value_selection !== 1 || $value_notes !== '') {
-								$statement = $db->prepare('INSERT INTO `answer` (`person_id`, `function`, `argument`, `selection`, `notes`, `created`, `deleted`) VALUES (?, ?, ?, ?, ?, ?, "0000-00-00 00:00:00")');
-								$statement->bind_param('ssssss', $person_id, $value_function, $value_argument, $value_selection, $value_notes, $now_iso);
-								$statement->execute();
+
+								$sql = 'INSERT INTO `answer` (
+											`person_id`,
+											`function`,
+											`argument`,
+											`selection`,
+											`notes`,
+											`created`,
+											`deleted`
+										) VALUES (
+											?,
+											?,
+											?,
+											?,
+											?,
+											?,
+											"0000-00-00 00:00:00"
+										)';
+
+								db_query($sql, [$person_id, $value_function, $value_argument, $value_selection, $value_notes, $now_iso]);
+
 							}
 
 							$confirmed = true;
@@ -408,7 +473,15 @@
 // Drop POST request (browser refresh)
 
 	if ($request_valid_post) {
-		$url = (strtolower(trim($_POST['button'] ?? '')) == 'save' ? '/?results=all' : '/');
+		$button = strtolower(trim($_POST['button'] ?? ''));
+		if ($button === 'save') {
+			$url = '/?results=all';
+		} else {
+			if ($button === 'next') {
+				$page++;
+			}
+			$url = '/?page=' . urlencode($page);
+		}
 		header('Location: ' . $url);
 		exit('<p>Go to <a href="' . htmlspecialchars($url) . '">next page</a>.</p>');
 	}
@@ -551,6 +624,10 @@
 
 		<?php if ($person_list) { ?>
 
+			<?php if (count($person_list) >= $results_limit) { ?>
+				<p>Only showing the last <strong><?= htmlspecialchars($results_limit) ?></strong> results.</p>
+			<?php } ?>
+
 			<div class="basic_table">
 				<table>
 					<thead>
@@ -578,63 +655,56 @@
 
 		<?php } else { ?>
 
-			<form action="./" method="post">
+			<form action="./?page=<?= htmlspecialchars(urlencode($page)) ?>" method="post">
 
 				<?php if (is_int($output_results)) { ?>
 
 					<p>Results from <strong><?= htmlspecialchars($person_details['name']) ?></strong> (<a href="/?results=all">back</a>):</p>
+
+				<?php } else if ($page > 0) { ?>
+
+					<p>Your Name: <strong><?= htmlspecialchars($person_details['name']) ?></strong> (<a href="/">edit</a>)</p>
 
 				<?php } else { ?>
 
 					<div class="row">
 						<label for="field_name">Your Name:</label>
 						<input id="field_name" name="name" type="text" value="<?= htmlspecialchars($person_details ? $person_details['name'] : '') ?>" maxlength="30" />
-						<input type="submit" name="button" value="<?= htmlspecialchars($person_details ? 'Update' : 'Next') ?>" />
+						<input type="submit" name="button" value="Next" />
 					</div>
 
 				<?php } ?>
 
 				<?php if ($person_details) { ?>
 
-					<hr />
+					<?php if ($page == 1) { ?>
 
-					<p>NULL is often used in PHP, e.g.</p>
-					<code class="block">
-						setcookie('name', 'value', 0, <span class="nullable">NULL</span>, <span class="nullable">NULL</span>, true, true);<br />
-						<br />
-						<span class="nullable">$search</span> = $request->get('q'); <span class="comment">// e.g. <a href="https://github.com/symfony/symfony/blob/34a265c286fe30a309ab77e57a1f69d7bbd76583/src/Symfony/Component/HttpFoundation/Request.php#L674" target="_blank" rel="noopener">Symfony returns NULL</a> if user value not provided (e.g. $_GET)</span><br />
-						$results = $entries->findBy([<span class="literal_string">'name'</span> => trim(<span class="nullable">$search</span>]);<br />
-						$url = <span class="literal_string">'./?q='</span> . urlencode(<span class="nullable">$search</span>);<br />
-						echo <span class="literal_string">'Search for: '</span> . htmlspecialchars(<span class="nullable">$search</span>);
-					</code>
+						<hr />
 
-					<p>Currently these functions have signatures that state they only accept strings, e.g.</p>
+						<p>NULL is often used in PHP, e.g.</p>
+						<code class="block">
+							setcookie('name', 'value', 0, <span class="nullable">NULL</span>, <span class="nullable">NULL</span>, true, true);<br />
+							<br />
+							<span class="nullable">$search</span> = $request->get('q'); <span class="comment">// e.g. <a href="https://github.com/symfony/symfony/blob/34a265c286fe30a309ab77e57a1f69d7bbd76583/src/Symfony/Component/HttpFoundation/Request.php#L674" target="_blank" rel="noopener">Symfony returns NULL</a> if user value not provided (e.g. $_GET)</span><br />
+							$results = $entries->findBy([<span class="literal_string">'name'</span> => trim(<span class="nullable">$search</span>]);<br />
+							$url = <span class="literal_string">'./?q='</span> . urlencode(<span class="nullable">$search</span>);<br />
+							echo <span class="literal_string">'Search for: '</span> . htmlspecialchars(<span class="nullable">$search</span>);
+						</code>
 
-					<code class="block">
-						<a href="https://php.net/trim" target="_blank" rel="noopener">trim</a>(string <span class="nullable">$string</span>, string $characters = " \n\r\t\v\x00"): string<br />
-						<br />
-						<a href="https://php.net/urlencode" target="_blank" rel="noopener">urlencode</a>(string <span class="nullable">$string</span>): string<br />
-						<br />
-						<a href="https://php.net/htmlspecialchars" target="_blank" rel="noopener">htmlspecialchars</a>(<br />
-						&#xA0; &#xA0; string <span class="nullable">$string</span>,<br />
-						&#xA0; &#xA0; int $flags = ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401,<br />
-						&#xA0; &#xA0; ?string <span class="nullable">$encoding</span> = null,<br />
-						&#xA0; &#xA0; bool $double_encode = true<br />
-						&#xA0; ): string<br />
-					</code>
+						<p>Currently these functions have signatures that state they only accept strings, e.g.</p>
 
-					<?php if (is_int($output_results)) { ?>
-
-						<p>
-							<?= htmlspecialchars($approach_label) ?>:
-							<?php if (array_key_exists($person_details['approach'], $approaches)) { ?>
-								<strong><?= htmlspecialchars($approaches[$person_details['approach']]) ?></strong>.
-							<?php } else { ?>
-								<strong>N/A</strong>
-							<?php } ?>
-						</p>
-
-					<?php } else { ?>
+						<code class="block">
+							<a href="https://php.net/trim" target="_blank" rel="noopener">trim</a>(string <span class="nullable">$string</span>, string $characters = " \n\r\t\v\x00"): string<br />
+							<br />
+							<a href="https://php.net/urlencode" target="_blank" rel="noopener">urlencode</a>(string <span class="nullable">$string</span>): string<br />
+							<br />
+							<a href="https://php.net/htmlspecialchars" target="_blank" rel="noopener">htmlspecialchars</a>(<br />
+							&#xA0; &#xA0; string <span class="nullable">$string</span>,<br />
+							&#xA0; &#xA0; int $flags = ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401,<br />
+							&#xA0; &#xA0; ?string <span class="nullable">$encoding</span> = null,<br />
+							&#xA0; &#xA0; bool $double_encode = true<br />
+							&#xA0; ): string<br />
+						</code>
 
 						<fieldset class="row">
 							<legend><?= htmlspecialchars($approach_label) ?>:</legend>
@@ -643,20 +713,38 @@
 									echo '<p class="radio"><label><input type="radio" name="approach" value="' . htmlspecialchars($a) . '"' . ($person_details['approach'] == $a ? ' checked="checked"' : '') . ' /> <span>' . htmlspecialchars($approach) . '.</span></label></p>';
 								}
 							?>
-							<p><input type="submit" name="button" value="<?= ($person_details['approach'] ? 'Update' : 'Next') ?>" /></p>
+							<p><input type="submit" name="button" value="Next" /></p>
 						</fieldset>
+
+					<?php } else if ($page == 2 || is_int($output_results)) { ?>
+
+						<p>
+							<?= htmlspecialchars($approach_label) ?>:
+							<?php if (array_key_exists($person_details['approach'], $approaches)) { ?>
+								<strong><?= htmlspecialchars($approaches[$person_details['approach']]) ?></strong>.
+							<?php } else { ?>
+								<strong>N/A</strong>
+							<?php } ?>
+							<?php if ($page == 2) { ?>
+								(<a href="/?page=1">edit</a>)
+							<?php } ?>
+						</p>
 
 					<?php } ?>
 
 				<?php } ?>
 
-				<?php if ($person_details && $person_details['approach']) { ?>
+				<?php if ($person_details && $person_details['approach'] && ($page == 2 || is_int($output_results))) { ?>
 
 					<hr />
 
-					<p>We shouldn't update parameters where NULL is clearly an invalid value; e.g, PHP probably should complain with an empty $needle in <a href="https://php.net/strpos" target="_blank" rel="noopener">strpos()</a>, or $characters in <a href="https://php.net/strpos" target="_blank" rel="noopener">trim()</a>, or $method in <a href="https://php.net/strpos" target="_blank" rel="noopener">method_exists()</a>.</p>
+					<?php if ($page == 2) { ?>
 
-					<p>While you can <a href="https://github.com/craigfrancis/php-allow-null-rfc/issues" target="_blank" rel="noopener">suggest additional parameters</a>; which of these parameters should continue to <strong class="accept_null">Accept NULL</strong>, or should NULL trigger a <strong class="fatal_error">Fatal Error</strong>?</p>
+						<p>We shouldn't update parameters where NULL is clearly an invalid value; e.g, PHP probably should complain with an empty $needle in <a href="https://php.net/strpos" target="_blank" rel="noopener">strpos()</a>, or $characters in <a href="https://php.net/strpos" target="_blank" rel="noopener">trim()</a>, or $method in <a href="https://php.net/strpos" target="_blank" rel="noopener">method_exists()</a>.</p>
+
+						<p>While you can <a href="https://github.com/craigfrancis/php-allow-null-rfc/issues" target="_blank" rel="noopener">suggest additional parameters</a>; which of the following parameters should continue to <strong class="accept_null">Accept NULL</strong>, or should NULL trigger a <strong class="fatal_error">Fatal Error</strong>?</p>
+
+					<?php } ?>
 
 					<?php foreach ($sections as $section_id => $section_name) { ?>
 
@@ -717,7 +805,9 @@
 
 					<?php } ?>
 
-					<div><input type="submit" name="button" value="Save" /></div>
+					<?php if ($page == 2) { ?>
+						<div><input type="submit" name="button" value="Save" /></div>
+					<?php } ?>
 
 				<?php } ?>
 

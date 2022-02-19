@@ -170,7 +170,8 @@
 						`p`.`name`,
 						`p`.`notes`,
 						`p`.`approach`,
-						`p`.`created`
+						`p`.`created`,
+						`p`.`edited`
 					FROM
 						`person` AS `p`
 					WHERE
@@ -187,7 +188,7 @@
 			while ($row = $result->fetch_assoc()) {
 				$person_list[$row['id']] = array_merge($row, [
 						'created' => new DateTime($row['created']),
-						'ended'   => new DateTime($row['created']),
+						'ended'   => new DateTime($row['edited']),
 						'url'     => '/?results=' . urlencode($row['id']),
 						'counts'  => ['2' => 0, '3' => 0],
 					]);
@@ -278,6 +279,7 @@
 							`name`,
 							`notes`,
 							`created`,
+							`edited`,
 							`deleted`
 						) VALUES (
 							"",
@@ -286,10 +288,11 @@
 							?,
 							?,
 							?,
+							?,
 							"0000-00-00 00:00:00"
 						)';
 
-				$statement = db_query($sql, [$person_uuid, $remote_ip, $person_details['name'], $person_details['notes'], $now_iso]);
+				$statement = db_query($sql, [$person_uuid, $remote_ip, $person_details['name'], $person_details['notes'], $now_iso, $now_iso]);
 
 				$person_id = $statement->insert_id;
 
@@ -317,12 +320,13 @@
 						$sql = 'UPDATE
 									`person`
 								SET
-									`' . $new_field . '` = ?
+									`' . $new_field . '` = ?,
+									edited = ?
 								WHERE
 									`id` = ? AND
 									`deleted` = "0000-00-00 00:00:00"';
 
-						db_query($sql, [$new_value, $person_id]);
+						db_query($sql, [$new_value, $now_iso, $person_id]);
 
 						$person_details[$new_field] = $new_value;
 

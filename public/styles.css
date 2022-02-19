@@ -134,6 +134,7 @@
 	}
 
 	fieldset.row legend {
+		padding-inline: 0;
 		font-weight: bold;
 		display: block;
 	}

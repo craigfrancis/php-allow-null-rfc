@@ -33,9 +33,9 @@
 
 	$approach_label = 'How should PHP 9 work?';
 	$approaches = [
-			'1' => 'Update parameters to explicitly allow NULL (e.g. `?string`)',
-			'2' => 'NULL should trigger a Fatal Error when using strict_types=1, for everyone else NULL should be treated as an empty string',
-			'3' => 'NULL should trigger a Fatal Error for everyone',
+			'1' => 'NULL triggers a Fatal Error with strict_types=1, otherwise treat like an Empty String (similar to how integers are accepted)',
+			'2' => 'NULL triggers a Fatal Error for everyone, but update some parameters to explicitly allow NULL (e.g. `?string`)',
+			'3' => 'NULL triggers a Fatal Error for everyone (forget about backwards compatibility)',
 			'4' => 'Don\'t Mind',
 		];
 
@@ -127,6 +127,15 @@
 			'approach' => ($_POST['approach'] ?? NULL),
 			'voter'    => ($_POST['voter'] ?? NULL),
 		];
+
+	$approach_building = false;
+	foreach ($approaches as $a => $approach) {
+		$append = ($_POST['approach_' . $a] ?? NULL);
+		if ($append !== NULL) {
+			$person_new['approach'] = trim($person_new['approach'] . '-' . $a, '-');
+			$approach_building = true;
+		}
+	}
 
 	if ($output_results !== NULL) {
 
@@ -344,6 +353,16 @@
 	}
 
 //--------------------------------------------------
+// Selected approaches
+
+	$person_approaches = ($_GET['approach'] ?? NULL);
+	if ($person_approaches === NULL && $person_details) {
+		$person_approaches = $person_details['approach'];
+	}
+
+	$person_approaches = array_unique(array_filter(array_map('trim', explode('-', strval($person_approaches)))));
+
+//--------------------------------------------------
 // Current answers
 
 	$current_answers = [];
@@ -496,6 +515,13 @@
 			}
 			$url = '/?page=' . urlencode($page);
 		}
+		if ($approach_building) {
+			if (count($person_approaches) == count($approaches)) {
+				$url = '/?page=2';
+			} else {
+				$url .= '&approach=' . urlencode($person_new['approach']); // Support back button
+			}
+		}
 		header('Location: ' . $url);
 		exit('<p>Go to <a href="' . htmlspecialchars($url) . '">next page</a>.</p>');
 	}
@@ -635,7 +661,7 @@
 	header("Permissions-Policy: accelerometer=(), autoplay=(), camera=(), ch-device-memory=(), ch-downlink=(), ch-dpr=(), ch-ect=(), ch-prefers-color-scheme=(), ch-rtt=(), ch-ua=(), ch-ua-arch=(), ch-ua-bitness=(), ch-ua-full-version=(), ch-ua-full-version-list=(), ch-ua-mobile=(), ch-ua-model=(), ch-ua-platform=(), ch-ua-platform-version=(), ch-viewport-width=(), ch-width=(), clipboard-read=(), clipboard-write=(), cross-origin-isolated=(self), display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), hid=(), idle-detection=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), otp-credentials=(self), payment=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), usb=(), xr-spatial-tracking=(), sync-xhr=(), picture-in-picture=()");
 
 	if (str_starts_with(ROOT, '/Volumes')) {
-		// header("Content-Type: application/xhtml+xml; charset=UTF-8");
+		header("Content-Type: application/xhtml+xml; charset=UTF-8");
 	}
 
 ?>
@@ -691,9 +717,9 @@
 						<?php foreach ($person_list as $p) { ?>
 							<tr>
 								<th><a href="<?= htmlspecialchars($p['url']) ?>"><?= htmlspecialchars($p['name']) ?></a></th>
-								<td><?= htmlspecialchars($p['approach'] == 0 ? '-' : $p['approach']) ?></td>
-								<td><strong class="accept_null"><?= htmlspecialchars($p['counts']['2'] == 0 ? '-' : $p['counts']['2']) ?></strong></td>
-								<td><strong class="fatal_error"><?= htmlspecialchars($p['counts']['3'] == 0 ? '-' : $p['counts']['3']) ?></strong></td>
+								<td><?= htmlspecialchars($p['approach'] == '' ? '-' : str_replace('-', ', ', $p['approach'])) ?></td>
+								<td><strong class="accept_null"><?= htmlspecialchars($p['counts']['2'] == 0 ? '-' : 'x' . $p['counts']['2']) ?></strong></td>
+								<td><strong class="fatal_error"><?= htmlspecialchars($p['counts']['3'] == 0 ? '-' : 'x' . $p['counts']['3']) ?></strong></td>
 								<td><?= htmlspecialchars($p['created']->format('H:i - jS M Y')) ?></td>
 								<td><?= htmlspecialchars($p['ended']->format('H:i - jS M Y')) ?></td>
 							</tr>
@@ -711,7 +737,7 @@
 
 		<?php } else { ?>
 
-			<form action="./?page=<?= htmlspecialchars(urlencode($page)) ?>" method="post">
+			<form action="/?page=<?= htmlspecialchars(urlencode($page)) ?>" method="post">
 
 				<?php if (is_int($output_results)) { ?>
 
@@ -748,56 +774,104 @@
 
 						<hr />
 
-						<p>NULL is often used in PHP, e.g.</p>
-						<code class="block">
-							<a href="https://php.net/mail" target="_blank" rel="noopener">mail</a>('nobody@example.com', 'subject', 'message', <span class="nullable">NULL</span>, '-fwebmaster@example.com');<br />
-							<br />
-							<a href="https://php.net/setcookie" target="_blank" rel="noopener">setcookie</a>('name', 'value', 0, <span class="nullable">NULL</span>, <span class="nullable">NULL</span>, true, true);<br />
-							<br />
-							<span class="nullable">$search</span> = $request->get('q'); <span class="comment">// e.g. <a href="https://github.com/symfony/symfony/blob/34a265c286fe30a309ab77e57a1f69d7bbd76583/src/Symfony/Component/HttpFoundation/Request.php#L674" target="_blank" rel="noopener">Symfony returns NULL</a> if user value not provided (e.g. $_GET)</span><br />
-							$results = $entries->findBy([<span class="literal_string">'name'</span> => <a href="https://php.net/trim" target="_blank" rel="noopener">trim</a>(<span class="nullable">$search</span>]);<br />
-							$url = <span class="literal_string">'./?q='</span> . <a href="https://php.net/urlencode" target="_blank" rel="noopener">urlencode</a>(<span class="nullable">$search</span>);<br />
-							echo <span class="literal_string">'Search for: '</span> . <a href="https://php.net/htmlspecialchars" target="_blank" rel="noopener">htmlspecialchars</a>(<span class="nullable">$search</span>);
-						</code>
+						<?php if (count($person_approaches) == 0) { ?>
 
-						<p>Currently these functions have signatures that state they only accept strings, e.g.</p>
+							<p>NULL is often used in PHP, e.g.</p>
+							<code class="block">
+								<a href="https://php.net/mail" target="_blank" rel="noopener">mail</a>('nobody@example.com', 'subject', 'message', <span class="nullable">NULL</span>, '-fwebmaster@example.com');<br />
+								<br />
+								<a href="https://php.net/setcookie" target="_blank" rel="noopener">setcookie</a>('name', 'value', 0, <span class="nullable">NULL</span>, <span class="nullable">NULL</span>, true, true);<br />
+								<br />
+								<span class="nullable">$search</span> = $request->get('q'); <span class="comment">// Frameworks like <a href="https://github.com/symfony/symfony/blob/34a265c286fe30a309ab77e57a1f69d7bbd76583/src/Symfony/Component/HttpFoundation/Request.php#L674" target="_blank" rel="noopener">Symfony</a> return NULL if a user value is not provided (e.g. $_GET)</span><br />
+								$results = $entries->findBy([<span class="literal_string">'name'</span> => <a href="https://php.net/trim" target="_blank" rel="noopener">trim</a>(<span class="nullable">$search</span>]);<br />
+								$url = <span class="literal_string">'./?q='</span> . <a href="https://php.net/urlencode" target="_blank" rel="noopener">urlencode</a>(<span class="nullable">$search</span>);<br />
+								echo <span class="literal_string">'Search for: '</span> . <a href="https://php.net/htmlspecialchars" target="_blank" rel="noopener">htmlspecialchars</a>(<span class="nullable">$search</span>);<br />
+								<br />
+								echo <span class="literal_string">'Random: '</span> . <a href="https://php.net/htmlspecialchars" target="_blank" rel="noopener">htmlspecialchars</a>(rand(1, 6)); <span class="comment">// Integers are fine when not using strict_types=1</span>
+							</code>
 
-						<code class="block">
-							<a href="https://php.net/trim" target="_blank" rel="noopener">trim</a>(string <span class="nullable">$string</span>, string $characters = " \n\r\t\v\x00"): string<br />
-							<br />
-							<a href="https://php.net/urlencode" target="_blank" rel="noopener">urlencode</a>(string <span class="nullable">$string</span>): string<br />
-							<br />
-							<a href="https://php.net/htmlspecialchars" target="_blank" rel="noopener">htmlspecialchars</a>(<br />
-							&#xA0; &#xA0; string <span class="nullable">$string</span>,<br />
-							&#xA0; &#xA0; int $flags = ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401,<br />
-							&#xA0; &#xA0; ?string <span class="nullable">$encoding</span> = null,<br />
-							&#xA0; &#xA0; bool $double_encode = true<br />
-							&#xA0; ): string<br />
-						</code>
+							<p>Currently these functions have signatures that state they <em>only</em> accept strings, e.g.</p>
+
+							<code class="block">
+								<a href="https://php.net/trim" target="_blank" rel="noopener">trim</a>(<span class="nullable">string</span> $string, string $characters = " \n\r\t\v\x00"): string<br />
+								<br />
+								<a href="https://php.net/urlencode" target="_blank" rel="noopener">urlencode</a>(<span class="nullable">string</span> $string): string<br />
+								<br />
+								<a href="https://php.net/htmlspecialchars" target="_blank" rel="noopener">htmlspecialchars</a>(<br />
+								&#xA0; &#xA0; <span class="nullable">string</span> $string,<br />
+								&#xA0; &#xA0; int $flags = ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401,<br />
+								&#xA0; &#xA0; <strong>?string</strong> $encoding = null,<br />
+								&#xA0; &#xA0; bool $double_encode = true<br />
+								&#xA0; ): string<br />
+							</code>
+
+							<p>It's worth noting that <em>some</em> parameters, like $separator in <a href="https://php.net/explode" target="_blank" rel="noopener">explode</a>(), already have a "cannot be empty" Fatal Error. So it might be useful to have a separate RFC to update some more parameters to consistently reject NULL <em>and</em> Empty Strings, e.g. $needle in <a href="https://php.net/strpos" target="_blank" rel="noopener">strpos</a>() and $json in <a href="https://php.net/json_decode" target="_blank" rel="noopener">json_decode</a>().</p>
+
+						<?php } ?>
 
 						<fieldset class="row">
-							<legend><?= htmlspecialchars($approach_label) ?>:</legend>
+							<legend><?= htmlspecialchars($approach_label) ?></legend>
+							<input type="hidden" name="approach" value="<?= htmlspecialchars(implode('-', $person_approaches)) ?>" />
 							<?php
-								foreach ($approaches as $a => $approach) {
-									echo '<p class="radio"><label><input type="radio" name="approach" value="' . htmlspecialchars($a) . '"' . ($person_details['approach'] == $a ? ' checked="checked"' : '') . ' /> <span>' . htmlspecialchars($approach) . '.</span></label></p>';
+
+								if (count($person_approaches) == 0) {
+									echo '
+										<p>Please rank these 4 options, starting with your 1st choice.</p>';
+								} else {
+									echo '
+										<ol>';
+									$change = [];
+									foreach ($person_approaches as $a) {
+										echo '
+											<li>' . htmlentities($approaches[$a]) . ' - <a href="' . htmlentities('/?page=1&approach=' . urlencode(implode('-', $change))) . '">Change</a></li>';
+										$change[] = $a;
+									}
+									echo '
+										</ol>';
 								}
+
+								$question = 'Next Choice';
+								switch (count($person_approaches)) {
+									case 0:
+										$question = '1st Choice';
+										break;
+									case 1:
+										$question = '2nd Choice';
+										break;
+									case 2:
+										$question = '3rd Choice';
+										break;
+									case 3:
+										$question = '4th Choice';
+										break;
+								}
+								foreach ($approaches as $a => $approach) {
+									if (!in_array($a, $person_approaches)) {
+										echo '
+											<p class="choice"><label><input type="submit" name="approach_' . htmlspecialchars($a) . '" value="' . htmlspecialchars($question) . ':" /> <span>' . htmlspecialchars($approach) . '.</span></label></p>';
+									}
+								}
+								if (count($person_approaches) > 0) {
+									echo '
+										<p>Or <input type="submit" name="button" value="Continue" /></p>';
+								}
+
 							?>
-							<p><input type="submit" name="button" value="Next" /></p>
 						</fieldset>
 
 					<?php } else if ($page >= 2 || is_int($output_results)) { ?>
 
-						<p>
-							<?= htmlspecialchars($approach_label) ?>:
-							<?php if (array_key_exists($person_details['approach'], $approaches)) { ?>
-								<strong><?= htmlspecialchars($approaches[$person_details['approach']]) ?></strong>.
-							<?php } else { ?>
-								<strong>N/A</strong>
-							<?php } ?>
-							<?php if ($page >= 2) { ?>
-								(<a href="/?page=1">edit</a>)
-							<?php } ?>
-						</p>
+						<div>
+							<?= htmlspecialchars($approach_label) ?><?= ($page >= 2 ? ' (<a href="/?page=1&amp;approach=">edit</a>)' : '') ?>
+							<ol>
+								<?php foreach ($person_approaches as $a) { ?>
+									<li><?= htmlentities($approaches[$a]) ?>.</li>
+								<?php } ?>
+								<?php if (count($person_approaches) == 0) { ?>
+									<li>N/A</li>
+								<?php } ?>
+							</ol>
+						</div>
 
 					<?php } ?>
 
@@ -809,11 +883,13 @@
 
 					<p>Thank you.</p>
 
-					<p>There is an <strong>optional</strong> second part to this questionnaire, which allows you to confirm which functions should be updated.</p>
+					<p>There is an <strong>optional</strong> second part to this questionnaire.</p>
 
-					<p>For example, PHP probably should complain about an empty $needle in <a href="https://php.net/strpos" target="_blank" rel="noopener">strpos()</a>, or $characters in <a href="https://php.net/strpos" target="_blank" rel="noopener">trim()</a>, or $method in <a href="https://php.net/strpos" target="_blank" rel="noopener">method_exists()</a>.</p>
+					<p><strong>If</strong> we "update some parameters to explicitly allow NULL" (e.g. `?string`), we should confirm which functions should be updated.</p>
 
-					<p>You can also <a href="https://github.com/craigfrancis/php-allow-null-rfc/issues" target="_blank" rel="noopener">suggest additional parameters</a>.</p>
+					<p>For example, there is no point allowing NULL for $needle in <a href="https://php.net/strpos" target="_blank" rel="noopener">strpos()</a>, $characters in <a href="https://php.net/strpos" target="_blank" rel="noopener">trim()</a>, or $method in <a href="https://php.net/strpos" target="_blank" rel="noopener">method_exists()</a>.</p>
+
+					<p>You can <a href="https://github.com/craigfrancis/php-allow-null-rfc/issues" target="_blank" rel="noopener">suggest additional parameters</a>; and what follows is a "short-list" of 276 parameters.</p>
 
 					<div><input type="submit" name="button" value="Continue" /></div>
 

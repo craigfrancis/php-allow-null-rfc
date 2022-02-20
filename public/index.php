@@ -809,7 +809,7 @@
 								&#xA0; ): string<br />
 							</code>
 
-							<p>It's worth noting that <em>some</em> parameters, like $separator in <a href="https://php.net/explode" target="_blank" rel="noopener">explode</a>(), already have a "cannot be empty" Fatal Error. So it might be useful to have a separate RFC to update some more parameters to consistently reject NULL <em>and</em> Empty Strings, e.g. $needle in <a href="https://php.net/strpos" target="_blank" rel="noopener">strpos</a>() and $json in <a href="https://php.net/json_decode" target="_blank" rel="noopener">json_decode</a>().</p>
+							<p>It's worth noting that <em>some</em> parameters, like $separator in <a href="https://php.net/explode" target="_blank" rel="noopener">explode</a>(), already have a "cannot be empty" Fatal Error. So it might be useful to have a separate RFC to update some more parameters to consistently reject NULL <em>or</em> Empty Strings, e.g. $needle in <a href="https://php.net/strpos" target="_blank" rel="noopener">strpos</a>() and $json in <a href="https://php.net/json_decode" target="_blank" rel="noopener">json_decode</a>().</p>
 
 						<?php } ?>
 

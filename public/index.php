@@ -33,7 +33,7 @@
 
 	$approach_label = 'How should PHP 9 work?';
 	$approaches = [
-			'1' => 'NULL triggers a Fatal Error with strict_types=1, otherwise treat like an Empty String (similar to how integers are accepted)',
+			'1' => 'NULL triggers a Fatal Error with strict_types=1, otherwise allow coercion (like how integers can be coerced to a string).',
 			'2' => 'NULL triggers a Fatal Error for everyone, but update some parameters to explicitly allow NULL (e.g. `?string`)',
 			'3' => 'NULL triggers a Fatal Error for everyone (forget about backwards compatibility)',
 			'4' => 'Don\'t Mind',

@@ -786,7 +786,7 @@
 
 							<p>NULL is coerced to an empty string, the integer/float 0, or the boolean false.</p>
 
-							<p>NULL had frequently been used by developers, e.g.</p>
+							<p>NULL has frequently been used by developers, e.g.</p>
 							<code class="block">
 								<a href="https://php.net/mail" target="_blank" rel="noopener">mail</a>('nobody@example.com', 'subject', 'message', <span class="nullable">NULL</span>, '-fwebmaster@example.com');<br />
 								<br />

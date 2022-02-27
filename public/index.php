@@ -815,7 +815,7 @@
 								&#xA0; ): string<br />
 							</code>
 
-							<p>PHP 8.1 introduced "Deprecate passing null to non-nullable arguments of internal functions" (<a href="https://externals.io/message/112327">discussion</a>), to create consistency between internal and user-defined functions; but, with the possible exception of Craig Duncan, there was no discussion about the inconsistency of NULL coercion compared to string/int/float/bool values, and the difficulty involved in updating existing code.</p>
+							<p>PHP 8.1 introduced "Deprecate passing null to non-nullable arguments of internal functions" (<a href="https://externals.io/message/112327">discussion</a>), to create consistency between internal and user-defined functions. But, with the possible exception of Craig Duncan, there was no discussion about the inconsistency of NULL coercion compared to string/int/float/bool values, and the difficulty involved in updating existing code.</p>
 
 							<p>It's worth noting that some parameters should not accept NULL <em>or</em> an Empty String. For example, $separator in <a href="https://php.net/explode" target="_blank" rel="noopener">explode</a>() already has a "cannot be empty" Fatal Error. A different RFC could consider updating more parameters to consistently reject NULL <em>or</em> Empty Strings, e.g. $needle in <a href="https://php.net/strpos" target="_blank" rel="noopener">strpos</a>() and $json in <a href="https://php.net/json_decode" target="_blank" rel="noopener">json_decode</a>().</p>
 

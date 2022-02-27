@@ -33,7 +33,7 @@
 
 	$approach_label = 'How should PHP 9 work?';
 	$approaches = [
-			'1' => 'NULL triggers a Fatal Error with strict_types=1, otherwise allow coercion (like how integers can be coerced to a string).',
+			'1' => 'NULL triggers a Fatal Error with strict_types=1, otherwise use coercion (like how integers can be coerced to a string)',
 			'2' => 'NULL triggers a Fatal Error for everyone, but update some parameters to explicitly allow NULL (e.g. `?string`)',
 			'3' => 'NULL triggers a Fatal Error for everyone (forget about backwards compatibility)',
 			'4' => 'Don\'t Mind',
@@ -690,7 +690,7 @@
 </head>
 <body>
 
-	<p class="warning"><strong>Testing Mode: Answers will be deleted!</strong></p>
+	<!-- <p class="warning"><strong>Testing Mode: Answers will be deleted!</strong></p> -->
 
 	<main>
 
@@ -780,7 +780,13 @@
 
 						<?php if (count($person_approaches) == 0) { ?>
 
-							<p>NULL is often used in PHP, e.g.</p>
+							<p></p>
+
+							<p>When <strong>not</strong> using `strict_types=1`, "PHP will coerce values of the wrong type into the expected scalar type declaration if possible" (<a href="https://www.php.net/manual/en/language.types.declarations.php#language.types.declarations.strict">ref</a>).</p>
+
+							<p>NULL is coerced to an empty string, the integer/float 0, or the boolean false.</p>
+
+							<p>NULL had frequently been used by developers, e.g.</p>
 							<code class="block">
 								<a href="https://php.net/mail" target="_blank" rel="noopener">mail</a>('nobody@example.com', 'subject', 'message', <span class="nullable">NULL</span>, '-fwebmaster@example.com');<br />
 								<br />
@@ -791,10 +797,10 @@
 								$url = <span class="literal_string">'./?q='</span> . <a href="https://php.net/urlencode" target="_blank" rel="noopener">urlencode</a>(<span class="nullable">$search</span>);<br />
 								echo <span class="literal_string">'Search for: '</span> . <a href="https://php.net/htmlspecialchars" target="_blank" rel="noopener">htmlspecialchars</a>(<span class="nullable">$search</span>);<br />
 								<br />
-								echo <span class="literal_string">'Random: '</span> . <a href="https://php.net/htmlspecialchars" target="_blank" rel="noopener">htmlspecialchars</a>(rand(1, 6)); <span class="comment">// Integers are fine when not using strict_types=1</span>
+								echo <span class="literal_string">'Random: '</span> . <a href="https://php.net/htmlspecialchars" target="_blank" rel="noopener">htmlspecialchars</a>(rand(1, 6));
 							</code>
 
-							<p>Currently these functions have signatures that state they <em>only</em> accept strings, e.g.</p>
+							<p>But these are using coercion, e.g.</p>
 
 							<code class="block">
 								<a href="https://php.net/trim" target="_blank" rel="noopener">trim</a>(<span class="nullable">string</span> $string, string $characters = " \n\r\t\v\x00"): string<br />
@@ -809,7 +815,9 @@
 								&#xA0; ): string<br />
 							</code>
 
-							<p>It's worth noting that <em>some</em> parameters, like $separator in <a href="https://php.net/explode" target="_blank" rel="noopener">explode</a>(), already have a "cannot be empty" Fatal Error. So it might be useful to have a separate RFC to update some more parameters to consistently reject NULL <em>or</em> Empty Strings, e.g. $needle in <a href="https://php.net/strpos" target="_blank" rel="noopener">strpos</a>() and $json in <a href="https://php.net/json_decode" target="_blank" rel="noopener">json_decode</a>().</p>
+							<p>PHP 8.1 introduced "Deprecate passing null to non-nullable arguments of internal functions" (<a href="https://externals.io/message/112327">discussion</a>), to create consistency between internal and user-defined functions; but, with the possible exception of Craig Duncan, there was no discussion about the inconsistency of NULL coercion compared to string/int/float/bool values, and the difficulty involved in updating existing code.</p>
+
+							<p>It's worth noting that some parameters should not accept NULL <em>or</em> an Empty String. For example, $separator in <a href="https://php.net/explode" target="_blank" rel="noopener">explode</a>() already has a "cannot be empty" Fatal Error. A different RFC could consider updating more parameters to consistently reject NULL <em>or</em> Empty Strings, e.g. $needle in <a href="https://php.net/strpos" target="_blank" rel="noopener">strpos</a>() and $json in <a href="https://php.net/json_decode" target="_blank" rel="noopener">json_decode</a>().</p>
 
 						<?php } ?>
 
@@ -1001,7 +1009,7 @@
 
 	</main>
 
-	<p class="warning"><strong>Testing Mode: Answers will be deleted!</strong></p>
+	<!-- <p class="warning"><strong>Testing Mode: Answers will be deleted!</strong></p> -->
 
 	<footer>
 		<p>© <a href="https://twitter.com/craigfrancis" target="_blank" rel="noopener">Craig Francis</a> 2022</p>

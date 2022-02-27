@@ -901,7 +901,7 @@
 
 					<p>For example, there is no point allowing NULL for $needle in <a href="https://php.net/strpos" target="_blank" rel="noopener">strpos()</a>, $characters in <a href="https://php.net/strpos" target="_blank" rel="noopener">trim()</a>, or $method in <a href="https://php.net/strpos" target="_blank" rel="noopener">method_exists()</a>.</p>
 
-					<p>You can <a href="https://github.com/craigfrancis/php-allow-null-rfc/issues" target="_blank" rel="noopener">suggest additional parameters</a>; and what follows is a "short-list" of 276 parameters.</p>
+					<p>You can <a href="https://github.com/craigfrancis/php-allow-null-rfc/issues" target="_blank" rel="noopener">suggest additional parameters</a>; and what follows is a "short-list" of 335 parameters.</p>
 
 					<div><input type="submit" name="button" value="Continue" /></div>
 

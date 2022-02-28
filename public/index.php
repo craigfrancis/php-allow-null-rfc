@@ -175,6 +175,7 @@
 					FROM
 						`person` AS `p`
 					WHERE
+						`p`.`approach` != "" AND
 						`p`.`deleted` = "0000-00-00 00:00:00"
 					ORDER BY
 						`p`.`created` DESC

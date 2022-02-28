@@ -361,7 +361,7 @@
 // Selected approaches
 
 	$person_approaches = ($_GET['approach'] ?? NULL);
-	if ($person_approaches === NULL && $person_details) {
+	if ($person_approaches === NULL && isset($person_details['approach'])) {
 		$person_approaches = $person_details['approach'];
 	}
 

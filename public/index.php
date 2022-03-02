@@ -721,7 +721,13 @@
 					<tbody>
 						<?php foreach ($person_list as $p) { ?>
 							<tr>
-								<th><a href="<?= htmlspecialchars($p['url']) ?>"><?= htmlspecialchars($p['name'] == '' ? 'N/A' : '"' . $p['name'] . '"') ?></a></th>
+								<th>
+									<?php if ($p['name'] == '') { ?>
+										<a href="<?= htmlspecialchars($p['url']) ?>">N/A</a>
+									<?php } else { ?>
+										"<a href="<?= htmlspecialchars($p['url']) ?>"><?= htmlspecialchars($p['name']) ?></a>"
+									<?php } ?>
+								</th>
 								<td><?= htmlspecialchars($p['approach'] == '' ? '-' : str_replace('-', ', ', $p['approach'])) ?></td>
 								<td><strong class="accept_null"><?= htmlspecialchars($p['counts']['2'] == 0 ? '-' : 'x' . $p['counts']['2']) ?></strong></td>
 								<td><strong class="fatal_error"><?= htmlspecialchars($p['counts']['3'] == 0 ? '-' : 'x' . $p['counts']['3']) ?></strong></td>

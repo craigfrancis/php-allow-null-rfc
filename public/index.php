@@ -766,7 +766,7 @@
 
 					<div class="row person_name">
 						<label for="field_name">Your Name:</label>
-						<input id="field_name" name="name" type="text" value="<?= htmlspecialchars($person_details ? $person_details['name'] : '') ?>" maxlength="30" />
+						<input id="field_name" name="name" type="text" value="<?= htmlspecialchars($person_details ? $person_details['name'] : '') ?>" maxlength="30" required="required" />
 					</div>
 
 					<div class="row person_notes">

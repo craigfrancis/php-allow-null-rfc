@@ -25,8 +25,12 @@
 	$now_iso = $now->format('Y-m-d H:i:s');
 
 	$output_results = ($_GET['results'] ?? NULL);
-	if ($output_results !== NULL && $output_results !== 'all') {
-		$output_results = intval($output_results);
+	// if ($output_results !== NULL && $output_results !== 'all') {
+	// 	$output_results = intval($output_results);
+	// }
+	$output_results = intval($output_results);
+	if ($output_results <= 0) {
+		$output_results = 'all';
 	}
 
 	$page = intval($_GET['page'] ?? 0);

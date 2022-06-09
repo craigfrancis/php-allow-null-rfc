@@ -1,0 +1,26 @@
+diff --git a/ext/standard/html.c b/ext/standard/html.c
+index b93ce95df1..f0afa4c855 100644
+--- a/ext/standard/html.c
++++ b/ext/standard/html.c
+@@ -1321,7 +1321,7 @@ static void php_html_entities(INTERNAL_FUNCTION_PARAMETERS, int all)
+ 	bool double_encode = 1;
+ 
+ 	ZEND_PARSE_PARAMETERS_START(1, 4)
+-		Z_PARAM_STR(str)
++		Z_PARAM_STR_ALLOW_NULL(str)
+ 		Z_PARAM_OPTIONAL
+ 		Z_PARAM_LONG(flags)
+ 		Z_PARAM_STR_OR_NULL(hint_charset)
+diff --git a/ext/standard/string.c b/ext/standard/string.c
+index 36e8c1a737..8eec11d3d3 100644
+--- a/ext/standard/string.c
++++ b/ext/standard/string.c
+@@ -851,7 +851,7 @@ static zend_always_inline void php_do_trim(INTERNAL_FUNCTION_PARAMETERS, int mod
+ 	zend_string *what = NULL;
+ 
+ 	ZEND_PARSE_PARAMETERS_START(1, 2)
+-		Z_PARAM_STR(str)
++		Z_PARAM_STR_ALLOW_NULL(str)
+ 		Z_PARAM_OPTIONAL
+ 		Z_PARAM_STR(what)
+ 	ZEND_PARSE_PARAMETERS_END();
